@@ -69,7 +69,7 @@ public extension UIView {
      - Parameter parser: The optional parser to use to parse the SVG file
      - Parameter completion: A required completion block to execute once the SVG has completed parsing. The passed `SVGLayer` will be added to this view's sublayers before executing the completion block
      */
-    convenience init(svgNamed: String, parser: SVGParser? = nil, completion: ((SVGLayer) -> ())? = nil) {
+    convenience init(svgNamed: String, parser: SVGParser? = nil, completion: SVGCompletion? = nil) {
         
         // TODO: This is too many guards to really make any sense. Also approaching on the
         // pyramid of death Refactor this at some point to be able to work cross-platform.
@@ -118,7 +118,7 @@ public extension UIView {
     
     /// :nodoc:
     @available(*, deprecated, renamed: "init(svgNamed:parser:completion:)")
-    convenience init(SVGNamed: String, parser: SVGParser? = nil, completion: ((SVGLayer) -> ())? = nil) {
+    convenience init(SVGNamed: String, parser: SVGParser? = nil, completion: SVGCompletion? = nil) {
         self.init(svgNamed: SVGNamed, parser: parser, completion: completion)
     }
     
@@ -135,7 +135,7 @@ public extension UIView {
      - Parameter parser: The optional parser to use to parse the SVG file
      - Parameter completion: A required completion block to execute once the SVG has completed parsing. The passed `SVGLayer` will be added to this view's sublayers before executing the completion block
      */
-    convenience init(svgURL: URL, parser: SVGParser? = nil, completion: ((SVGLayer) -> ())? = nil) {
+    convenience init(svgURL: URL, parser: SVGParser? = nil, completion: SVGCompletion? = nil) {
         do {
             let svgData = try Data(contentsOf: svgURL)
             self.init(svgData: svgData, parser: parser, completion: completion)
@@ -147,7 +147,7 @@ public extension UIView {
     
     /// :nodoc:
     @available(*, deprecated, renamed: "init(svgURL:parser:completion:)")
-    convenience init(SVGURL: URL, parser: SVGParser? = nil, completion: ((SVGLayer) -> ())? = nil) {
+    convenience init(SVGURL: URL, parser: SVGParser? = nil, completion: SVGCompletion? = nil) {
         self.init(svgURL: SVGURL, parser: parser, completion: completion)
     }
 	
@@ -162,20 +162,30 @@ public extension UIView {
      - Parameter parser: The optional parser to use to parse the SVG file
      - Parameter completion: A required completion block to execute once the SVG has completed parsing. The passed `SVGLayer` will be added to this view's sublayers before executing the completion block
      */
-    convenience init(svgData: Data, parser: SVGParser? = nil, completion: ((SVGLayer) -> ())? = nil) {
+    convenience init(svgData: Data, parser: SVGParser? = nil, completion: SVGCompletion? = nil) {
 		self.init()
         
         CALayer(svgData: svgData, parser: parser) { [weak self] (svgLayer) in
-            DispatchQueue.main.safeAsync {
-                self?.nonOptionalLayer.addSublayer(svgLayer)
-            }
-            completion?(svgLayer)
+          switch svgLayer {
+            case .success(let layer):
+              DispatchQueue.main.safeAsync {
+                self?.nonOptionalLayer.addSublayer(layer)
+              }
+              completion?(.success(layer))
+              
+            case .failure(let error):
+              completion?(.failure(error))
+          }
+//            DispatchQueue.main.safeAsync {
+//                self?.nonOptionalLayer.addSublayer(svgLayer)
+//            }
+//            completion?(svgLayer)
         }
 	}
     
     /// :nodoc:
     @available(*, deprecated, renamed: "init(svgData:parser:completion:)")
-    convenience init(SVGData svgData: Data, parser: SVGParser? = nil, completion: ((SVGLayer) -> ())? = nil) {
+    convenience init(SVGData svgData: Data, parser: SVGParser? = nil, completion: SVGCompletion? = nil) {
         self.init(svgData: svgData, parser: parser, completion: completion)
     }
     
