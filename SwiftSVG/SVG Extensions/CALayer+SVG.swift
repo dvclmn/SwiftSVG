@@ -44,7 +44,7 @@ extension CALayer {
    - Parameter completion: A required completion block to execute once the SVG has completed parsing. You must add the passed `SVGLayer` to a sublayer to display it.
    */
   @discardableResult
-  public convenience init(svgURL: URL, parser: SVGParser? = nil, completion: @escaping SVGCompletion) {
+  public convenience init(svgURL: URL, parser: SVGParser? = nil, completion: @escaping SVGResult) {
     do {
       let svgData = try Data(contentsOf: svgURL)
       self.init(svgData: svgData, parser: parser, completion: completion)
@@ -56,7 +56,7 @@ extension CALayer {
   /// :nodoc:
   @available(*, deprecated, renamed: "init(svgURL:parser:completion:)")
   @discardableResult
-  public convenience init(SVGURL: URL, parser: SVGParser? = nil, completion: @escaping SVGCompletion) {
+  public convenience init(SVGURL: URL, parser: SVGParser? = nil, completion: @escaping SVGResult) {
     self.init(svgURL: SVGURL, parser: parser, completion: completion)
   }
 
@@ -70,7 +70,7 @@ extension CALayer {
   public convenience init(
     svgData: Data,
     parser: SVGParser? = nil,
-    completion: @escaping SVGCompletion
+    completion: @escaping SVGResult
   ) {
     self.init()
 
@@ -89,34 +89,24 @@ extension CALayer {
     dispatchQueue.async { [weak self] in
 
       let parserToUse: SVGParser
-      
+
       if let parser = parser {
         parserToUse = parser
-        
-      } else {
-        parserToUse = NSXMLSVGParser(svgData: svgData) { (svgLayer) in
 
-          if case .success(let layer) = svgLayer {
-            
+      } else {
+        parserToUse = NSXMLSVGParser(svgData: svgData) { (result) in
+
+          if case .success(let layer) = result {
+            DispatchQueue.global(qos: .userInitiated).async {
+              SVGCache.default[svgData.cacheKey] = layer
+            }
+
+            DispatchQueue.main.safeAsync {
+              self?.addSublayer(layer)
+            }
           }
-          switch svgLayer {
-            case .success(let layer):
-              DispatchQueue.global(qos: .userInitiated).async {
-//                guard let layerCopy = svgLayer.svgLayerCopy else {
-//                  return
-//                }
-                SVGCache.default[svgData.cacheKey] = layer
-              }
-              
-              DispatchQueue.main.safeAsync {
-                self?.addSublayer(layer)
-              }
-              
-              
-            case .failure(let error)
-              
-          }
-          completion(svgLayer)
+          completion(result)
+
         }
       }
       parserToUse.startParsing()
@@ -126,7 +116,7 @@ extension CALayer {
   /// :nodoc:
   @available(*, deprecated, renamed: "init(svgData:parser:completion:)")
   @discardableResult
-  public convenience init(SVGData: Data, parser: SVGParser? = nil, completion: @escaping SVGCompletion) {
+  public convenience init(SVGData: Data, parser: SVGParser? = nil, completion: @escaping SVGResult) {
     self.init()
   }
 

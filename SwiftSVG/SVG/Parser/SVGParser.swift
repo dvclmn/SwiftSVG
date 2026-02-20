@@ -44,7 +44,7 @@ struct SVGParseOptions: OptionSet {
  */
 
 
-public typealias SVGCompletion = (Result<SVGLayer, Error>) -> Void
+public typealias SVGResult = (Result<SVGLayer, Error>) -> Void
 
 /**
  A protocol describing an XML parser capable of parsing SVG data
@@ -58,11 +58,10 @@ public protocol SVGParser {
         - supportedElements: The elements and corresponding attribiutes the parser can parse
         - completion: A closure to execute after the parser has completed parsing and processing the SVG
      */
-    init(svgData: Data, supportedElements: SVGParserSupportedElements?, completion: SVGCompletion?)
+    init(svgData: Data, supportedElements: SVGParserSupportedElements?, completion: SVGResult?)
     
     /// A closure that is executed after all elements have been processed. Should be guaranteed to be executed after all elements have been processed, even if parsing asynchronously.
-    var completionBlock: SVGCompletion? { get }
-//    var completionBlock: ((SVGLayer) -> ())? { get }
+    var completionBlock: SVGResult? { get }
     
     /// A struct listing all the elements and its attributes that should be parsed
     var supportedElements: SVGParserSupportedElements? { get }

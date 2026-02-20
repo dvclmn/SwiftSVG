@@ -65,7 +65,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     fileprivate var elementStack = Stack<SVGElement>()
     
     /// :nodoc:
-    public var completionBlock: SVGCompletion?
+    public var completionBlock: SVGResult?
 //    public var completionBlock: ((SVGLayer) -> ())?
     
     /// :nodoc:
@@ -88,7 +88,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
      - parameter supportedElements: Optional `SVGParserSupportedElements` struct that restrict the elements and attributes that this parser can parse.If no value is provided, all supported attributes will be used.
      - parameter completion: Optional completion block that will be executed after all elements and attribites have been parsed.
      */
-    public convenience init(svgURL: URL, supportedElements: SVGParserSupportedElements? = nil, completion: SVGCompletion? = nil) {
+    public convenience init(svgURL: URL, supportedElements: SVGParserSupportedElements? = nil, completion: SVGResult? = nil) {
         
         do {
             let urlData = try Data(contentsOf: svgURL)
@@ -101,7 +101,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     
     /// :nodoc:
     @available(*, deprecated, renamed: "init(svgURL:supportedElements:completion:)")
-    public convenience init(SVGURL: URL, supportedElements: SVGParserSupportedElements? = nil, completion: SVGCompletion? = nil) {
+    public convenience init(SVGURL: URL, supportedElements: SVGParserSupportedElements? = nil, completion: SVGResult? = nil) {
         self.init(svgURL: SVGURL, supportedElements: supportedElements, completion: completion)
     }
     
@@ -111,7 +111,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
      - parameter supportedElements: Optional `SVGParserSupportedElements` struct that restricts the elements and attributes that this parser can parse. If no value is provided, all supported attributes will be used.
      - parameter completion: Optional completion block that will be executed after all elements and attribites have been parsed.
      */
-    public required init(svgData: Data, supportedElements: SVGParserSupportedElements? = SVGParserSupportedElements.allSupportedElements, completion: SVGCompletion? = nil) {
+    public required init(svgData: Data, supportedElements: SVGParserSupportedElements? = SVGParserSupportedElements.allSupportedElements, completion: SVGResult? = nil) {
         super.init(data: svgData)
         self.delegate = self
         self.supportedElements = supportedElements
@@ -120,7 +120,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     
     /// :nodoc:
     @available(*, deprecated, renamed: "init(svgData:supportedElements:completion:)")
-    public convenience init(SVGData: Data, supportedElements: SVGParserSupportedElements? = SVGParserSupportedElements.allSupportedElements, completion: SVGCompletion? = nil) {
+    public convenience init(SVGData: Data, supportedElements: SVGParserSupportedElements? = SVGParserSupportedElements.allSupportedElements, completion: SVGResult? = nil) {
         self.init(svgData: SVGData, supportedElements: supportedElements, completion: completion)
     }
     
