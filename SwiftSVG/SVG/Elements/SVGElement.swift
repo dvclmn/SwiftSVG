@@ -51,27 +51,21 @@
 
 
 
-/**
- A protocol describing an instance that can parse a single SVG element such as
- `<path>, <svg>, <rect>`.
- */
+/// A protocol describing an instance that can parse a single SVG element such as
+/// `<path>, <svg>, <rect>`.
 
 public protocol SVGElement {
     
-    /**
-     The element name as defined in the SVG specification
-     - SeeAlso: Official [SVG Element Names](https://www.w3.org/TR/SVG/eltindex.html)
-     */
+    /// The element name as defined in the SVG specification
+    /// - SeeAlso: Official [SVG Element Names](https://www.w3.org/TR/SVG/eltindex.html)
     static var elementName: String { get }
     
     /// Dictionary of attributes of a given element that are supported by the `SVGParser`. Keys are the name of an element's attribute such as `d`, `fill`, and `rx`. Values are a closure that is used to process the given attribute.
     var supportedAttributes: [String : (String) -> ()] { get set }
     
     
-    /**
-     An action to perform once the parser has dispatched all attributes to a given `SVGElement` instance
-     - Note: If using the default `NSXMLSVGParser` and the element parses asynchronously, there is no guarantee that the instance will be finished processing all the attribites when this is called.
-     */
+    /// An action to perform once the parser has dispatched all attributes to a given `SVGElement` instance
+    /// - Note: If using the default `NSXMLSVGParser` and the element parses asynchronously, there is no guarantee that the instance will be finished processing all the attribites when this is called.
     func didProcessElement(in container: SVGContainerElement?)
 }
 

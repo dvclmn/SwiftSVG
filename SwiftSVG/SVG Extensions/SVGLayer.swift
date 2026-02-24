@@ -39,11 +39,9 @@ public protocol SVGLayerType {
 
 extension SVGLayerType where Self: CALayer {
 
-  /**
-   Scales a layer to aspect fit the given size.
-   - Parameter rect: The `CGRect` to fit into
-   - TODO: Should eventually support different content modes
-   */
+  /// Scales a layer to aspect fit the given size.
+  /// - Parameter rect: The `CGRect` to fit into
+  /// - TODO: Should eventually support different content modes
   @discardableResult
   public func resizeToFit(_ rect: CGRect) -> Self {
 

@@ -142,11 +142,9 @@ extension Transformable where Self : SVGShapeElement {
 }
 
 extension Transformable where Self : SVGShapeElement {
-  /**
-   The curried function to be used for the `SVGElement`'s default implementation. This dictionary is meant to be used in the `SVGParserSupportedElements` instance
-   - parameter Key: The SVG string value of the attribute
-   - parameter Value: A curried function to use to implement the SVG attribute
-   */
+  /// The curried function to be used for the `SVGElement`'s default implementation. This dictionary is meant to be used in the `SVGParserSupportedElements` instance
+  /// - parameter Key: The SVG string value of the attribute
+  /// - parameter Value: A curried function to use to implement the SVG attribute
   var transformAttributes: [String : (String) -> ()] {
     return [
       "transform": self.transform,
@@ -155,11 +153,9 @@ extension Transformable where Self : SVGShapeElement {
 }
 
 extension Transformable where Self : SVGGroup {
-  /**
-   The curried function to be used for the `SVGElement`'s default implementation. This dictionary is meant to be used in the `SVGParserSupportedElements` instance
-   - parameter Key: The SVG string value of the attribute
-   - parameter Value: A curried function to use to implement the SVG attribute
-   */
+  /// The curried function to be used for the `SVGElement`'s default implementation. This dictionary is meant to be used in the `SVGParserSupportedElements` instance
+  /// - parameter Key: The SVG string value of the attribute
+  /// - parameter Value: A curried function to use to implement the SVG attribute
   var transformAttributes: [String : (String) -> ()] {
     return [
       "transform": unown(self, SVGGroup.transform)

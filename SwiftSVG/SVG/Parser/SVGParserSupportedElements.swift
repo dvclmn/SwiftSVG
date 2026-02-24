@@ -36,17 +36,13 @@ public struct SVGParserSupportedElements {
     /// Typealias that serves as a placeholder for a closure that returns a new `SVGElement` instance
     public typealias ElementGenerator = () -> SVGElement
     
-    /**
-     A dictionary of all the supported elements and attributes for a given parser.
-     - Parameter Key: A string that matches the SVG attribute
-     - Parameter Value: A curried function to use to handle the particular attribute
-     */
+    /// A dictionary of all the supported elements and attributes for a given parser.
+    /// - Parameter Key: A string that matches the SVG attribute
+    /// - Parameter Value: A curried function to use to handle the particular attribute
     public let tags: [String : ElementGenerator]
     
-    /**
-     Initializer to create your own set of supported tags
-     - Parameter tags: Dictionary of SVG tag name keys and a closure values return an `SVGElement`
-     */
+    /// Initializer to create your own set of supported tags
+    /// - Parameter tags: Dictionary of SVG tag name keys and a closure values return an `SVGElement`
     public init(tags: [String : ElementGenerator]) {
         self.tags = tags
     }

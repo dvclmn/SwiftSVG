@@ -38,10 +38,8 @@ import AppKit
 
 public extension CAShapeLayer {
     
-    /**
-     Convenience initalizer that synchronously parses a single path string and returns a `CAShapeLayer`
-     - Parameter pathString: The path `d` string to parse.
-     */
+    /// Convenience initalizer that synchronously parses a single path string and returns a `CAShapeLayer`
+    /// - Parameter pathString: The path `d` string to parse.
     convenience init(pathString: String) {
         self.init()
         let singlePath = SVGPath(singlePathString: pathString)

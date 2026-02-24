@@ -40,11 +40,9 @@ public protocol Fillable {}
 /// Default implementation for fill attributes on `SVGShapeElement`s
 extension Fillable where Self: SVGShapeElement {
 
-  /**
-   The curried functions to be used for the `SVGShapeElement`'s default implementation. This dictionary is meant to be used in the `SVGParserSupportedElements` instance
-   - parameter Key: The SVG string value of the attribute
-   - parameter Value: A curried function to use to implement the SVG attribute
-   */
+  /// The curried functions to be used for the `SVGShapeElement`'s default implementation. This dictionary is meant to be used in the `SVGParserSupportedElements` instance
+  /// - parameter Key: The SVG string value of the attribute
+  /// - parameter Value: A curried function to use to implement the SVG attribute
   var fillAttributes: [String: (String) -> Void] {
     return [
       "color": self.fill,
@@ -55,10 +53,8 @@ extension Fillable where Self: SVGShapeElement {
     ]
   }
 
-  /**
-   Sets the fill color of the underlying `SVGLayer`
-   - SeeAlso: CAShapeLayer's [`fillColor`](https://developer.apple.com/documentation/quartzcore/cashapelayer/1522248-fillcolor)
-   */
+  /// Sets the fill color of the underlying `SVGLayer`
+  /// - SeeAlso: CAShapeLayer's [`fillColor`](https://developer.apple.com/documentation/quartzcore/cashapelayer/1522248-fillcolor)
   func fill(fillColor: String) {
     guard let colorComponents = self.svgLayer.fillColor?.components else {
       return
@@ -69,10 +65,8 @@ extension Fillable where Self: SVGShapeElement {
     self.svgLayer.fillColor = fillColor.withAlphaComponent(colorComponents[3]).cgColor
   }
 
-  /**
-   Sets the fill rule of the underlying `SVGLayer`. `CAShapeLayer`s have 2 possible values: `non-zero` (default), and `evenodd`
-   - SeeAlso: Core Animation's [Shape Fill Mode Value](https://developer.apple.com/documentation/quartzcore/cashapelayer/shape_fill_mode_values)
-   */
+  /// Sets the fill rule of the underlying `SVGLayer`. `CAShapeLayer`s have 2 possible values: `non-zero` (default), and `evenodd`
+  /// - SeeAlso: Core Animation's [Shape Fill Mode Value](https://developer.apple.com/documentation/quartzcore/cashapelayer/shape_fill_mode_values)
   func fillRule(fillRule: String) {
     guard fillRule == "evenodd" else {
       return
@@ -114,10 +108,8 @@ extension Fillable where Self: SVGGroup {
     self.delayedAttributes["fill"] = fillColor
   }
 
-  /**
-   Sets the fill rule for all subelements of the `SVGGroup`. `CAShapeLayer`s have 2 possible values: `non-zero` (default), and `evenodd`
-   - SeeAlso: Core Animation's [Shape Fill Mode Value](https://developer.apple.com/documentation/quartzcore/cashapelayer/shape_fill_mode_values)
-   */
+  /// Sets the fill rule for all subelements of the `SVGGroup`. `CAShapeLayer`s have 2 possible values: `non-zero` (default), and `evenodd`
+  /// - SeeAlso: Core Animation's [Shape Fill Mode Value](https://developer.apple.com/documentation/quartzcore/cashapelayer/shape_fill_mode_values)
   func fillRule(_ fillRule: String) {
     self.delayedAttributes["fill-rule"] = fillRule
   }

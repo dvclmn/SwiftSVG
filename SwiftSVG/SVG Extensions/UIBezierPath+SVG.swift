@@ -38,10 +38,8 @@
 
 public extension UIBezierPath {
     
-    /**
-     Parses a single path string. Parses synchronously.
-     - Parameter pathString: The path `d` string to parse.
-     */
+    /// Parses a single path string. Parses synchronously.
+    /// - Parameter pathString: The path `d` string to parse.
     convenience init(pathString: String) {
         let singlePath = SVGPath(singlePathString: pathString)
         guard let cgPath = singlePath.svgLayer.path else {

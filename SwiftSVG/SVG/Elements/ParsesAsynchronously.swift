@@ -40,10 +40,8 @@
 /// asynchronous tasks and decrements the count when an element has finished parsing.
 /// When the count has reached zero, a completion block is called
 protocol CanManageAsychronousParsing {
-    /**
-     The callback called when an `ParsesAsynchronously` element has finished parsing
-     - Parameter shapeLayer: The completed layer
-     */
+    /// The callback called when an `ParsesAsynchronously` element has finished parsing
+    /// - Parameter shapeLayer: The completed layer
     func finishedProcessing(_ shapeLayer: CAShapeLayer)
 }
 

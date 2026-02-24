@@ -73,12 +73,10 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     super.init(data: Data())
   }
 
-  /**
-   Convenience initializer that can initalize an `NSXMLSVGParser` using a local or remote `URL`
-   - parameter svgURL: The URL of the SVG.
-   - parameter supportedElements: Optional `SVGParserSupportedElements` struct that restrict the elements and attributes that this parser can parse.If no value is provided, all supported attributes will be used.
-   - parameter completion: Optional completion block that will be executed after all elements and attribites have been parsed.
-   */
+  /// Convenience initializer that can initalize an `NSXMLSVGParser` using a local or remote `URL`
+  /// - parameter svgURL: The URL of the SVG.
+  /// - parameter supportedElements: Optional `SVGParserSupportedElements` struct that restrict the elements and attributes that this parser can parse.If no value is provided, all supported attributes will be used.
+  /// - parameter completion: Optional completion block that will be executed after all elements and attribites have been parsed.
   public convenience init(
     svgURL: URL, supportedElements: SVGParserSupportedElements? = nil, completion: SVGResult? = nil
   ) {
@@ -100,12 +98,10 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     self.init(svgURL: SVGURL, supportedElements: supportedElements, completion: completion)
   }
 
-  /**
-   Initializer that can initalize an `NSXMLSVGParser` using SVG `Data`
-   - parameter svgURL: The URL of the SVG.
-   - parameter supportedElements: Optional `SVGParserSupportedElements` struct that restricts the elements and attributes that this parser can parse. If no value is provided, all supported attributes will be used.
-   - parameter completion: Optional completion block that will be executed after all elements and attribites have been parsed.
-   */
+  /// Initializer that can initalize an `NSXMLSVGParser` using SVG `Data`
+  /// - parameter svgURL: The URL of the SVG.
+  /// - parameter supportedElements: Optional `SVGParserSupportedElements` struct that restricts the elements and attributes that this parser can parse. If no value is provided, all supported attributes will be used.
+  /// - parameter completion: Optional completion block that will be executed after all elements and attribites have been parsed.
   public required init(
     svgData: Data,
     supportedElements: SVGParserSupportedElements? = SVGParserSupportedElements.allSupportedElements,
@@ -166,13 +162,11 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     self.elementStack.push(svgElement)
   }
 
-  /**
-   The `XMLParserDelegate` method called when the parser has ended parsing an SVG element. This methods pops the last element parsed off the stack and checks if there is an enclosing container layer. Every valid SVG file is guaranteed to have at least one container layer (at a minimum, a `SVGRootElement` instance).
-  
-   If the parser has finished parsing a `SVGShapeElement`, it will resize the parser's `containerLayer` bounding box to fit all subpaths
-  
-   If the parser has finished parsing a `<svg>` element, that `SVGRootElement`'s container layer is added to this parser's `containerLayer`.
-   */
+  /// The `XMLParserDelegate` method called when the parser has ended parsing an SVG element. This methods pops the last element parsed off the stack and checks if there is an enclosing container layer. Every valid SVG file is guaranteed to have at least one container layer (at a minimum, a `SVGRootElement` instance).
+  ///
+  /// If the parser has finished parsing a `SVGShapeElement`, it will resize the parser's `containerLayer` bounding box to fit all subpaths
+  ///
+  /// If the parser has finished parsing a `<svg>` element, that `SVGRootElement`'s container layer is added to this parser's `containerLayer`.
   open func parser(
     _ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?,
     qualifiedName qName: String?
@@ -208,12 +202,10 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     }
   }
 
-  /**
-   The `XMLParserDelegate` method called when the parser has finished parsing the SVG document. All supported elements and attributes are guaranteed to be dispatched at this point, but there's no guarantee that all elements have finished parsing.
-  
-   - SeeAlso: `CanManageAsychronousParsing` `finishedProcessing(shapeLayer:)`
-   - SeeAlso: `XMLParserDelegate` (`parserDidEndDocument(_:)`)[https://developer.apple.com/documentation/foundation/xmlparserdelegate/1418172-parserdidenddocument]
-   */
+  /// The `XMLParserDelegate` method called when the parser has finished parsing the SVG document. All supported elements and attributes are guaranteed to be dispatched at this point, but there's no guarantee that all elements have finished parsing.
+  ///
+  /// - SeeAlso: `CanManageAsychronousParsing` `finishedProcessing(shapeLayer:)`
+  /// - SeeAlso: `XMLParserDelegate` (`parserDidEndDocument(_:)`)[https://developer.apple.com/documentation/foundation/xmlparserdelegate/1418172-parserdidenddocument]
   public func parserDidEndDocument(_ parser: XMLParser) {
 
     self.asyncCountQueue.sync {
@@ -227,11 +219,9 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     }
   }
 
-  /**
-   The `XMLParserDelegate` method called when the parser has reached a fatal error in parsing. Parsing is stopped if an error is reached and you may want to check that your SVG file passes validation.
-   - SeeAlso: `XMLParserDelegate` (`parser(_:parseErrorOccurred:)`)[https://developer.apple.com/documentation/foundation/xmlparserdelegate/1412379-parser]
-   - SeeAlso: (SVG Validator)[https://validator.w3.org/]
-   */
+  /// The `XMLParserDelegate` method called when the parser has reached a fatal error in parsing. Parsing is stopped if an error is reached and you may want to check that your SVG file passes validation.
+  /// - SeeAlso: `XMLParserDelegate` (`parser(_:parseErrorOccurred:)`)[https://developer.apple.com/documentation/foundation/xmlparserdelegate/1412379-parser]
+  /// - SeeAlso: (SVG Validator)[https://validator.w3.org/]
   public func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
 //    print("Parse Error: \(parseError)")
     

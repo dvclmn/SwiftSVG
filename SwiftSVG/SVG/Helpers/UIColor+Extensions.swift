@@ -95,10 +95,8 @@ extension UIColor {
     self.init(cssName: svgString)
   }
 
-  /**
-   Convenience initializer that creates a new UIColor based on a 3, 4, 6, or 8 digit hex string. The leading `#` character is optional
-   - Parameter hexString: A 3, 4, 6, or 8 digit hex string
-   */
+  /// Convenience initializer that creates a new UIColor based on a 3, 4, 6, or 8 digit hex string. The leading `#` character is optional
+  /// - Parameter hexString: A 3, 4, 6, or 8 digit hex string
   internal convenience init?(hexString: String) {
 
     var workingString = hexString
@@ -176,10 +174,8 @@ extension UIColor {
       alpha: (colorsArray.count > 3 ? colorsArray[3] / 1.0 : 1.0))
   }
 
-  /**
-   Convenience initializer that creates a new UIColor from a CSS3 named color
-   - SeeAlso: See here for all the colors: [https://www.w3.org/TR/css3-color/#svg-color](https://www.w3.org/TR/css3-color/#svg-color)
-   */
+  /// Convenience initializer that creates a new UIColor from a CSS3 named color
+  /// - SeeAlso: See here for all the colors: [https://www.w3.org/TR/css3-color/#svg-color](https://www.w3.org/TR/css3-color/#svg-color)
   public convenience init?(cssName: String) {
     guard let namedColor = CGColor.named[cssName.lowercased()] else {
       return nil
