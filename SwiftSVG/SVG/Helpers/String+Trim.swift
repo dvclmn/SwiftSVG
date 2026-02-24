@@ -26,15 +26,13 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 import Foundation
 
 /// A `String` extension trims whitespace from the beginning or end of the string.
 extension String {
-    
-    /// Function that trims the whitespace from the beginning and end of a string.
-    internal func trimWhitespace() -> String {
-        return self.trimmingCharacters(in: CharacterSet.whitespaces)
-    }
+
+  /// Function that trims the whitespace from the beginning and end of a string.
+  internal func trimWhitespace() -> String {
+    return self.trimmingCharacters(in: CharacterSet.whitespaces)
+  }
 }
