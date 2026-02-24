@@ -37,22 +37,17 @@ internal struct CoordinateLexer: IteratorProtocol, Sequence {
     /// Generates a `CGPoint`
     typealias Element = CGPoint
     
-    /// :nodoc:
-    private var currentCharacter: CChar {
+        private var currentCharacter: CChar {
         return self.workingString[self.interatorIndex]
     }
     
-    /// :nodoc:
-    private var coordinateString: String
+        private var coordinateString: String
     
-    /// :nodoc:
-    private var workingString: ContiguousArray<CChar>
+        private var workingString: ContiguousArray<CChar>
     
-    /// :nodoc:
-    private var interatorIndex: Int = 0
+        private var interatorIndex: Int = 0
     
-    /// :nodoc:
-    private var numberArray = [CChar]()
+        private var numberArray = [CChar]()
     
     /// Creates a new `CoordinateLexer` from a comma or space separated number string
     internal init(coordinateString: String) {

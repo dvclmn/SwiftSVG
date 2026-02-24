@@ -38,8 +38,7 @@
 
 final class SVGGroup: SVGContainerElement {
     
-    /// :nodoc:
-    fileprivate static let groupAttributes: [String : (SVGGroup) -> (String, CAShapeLayer) -> ()] = [
+        fileprivate static let groupAttributes: [String : (SVGGroup) -> (String, CAShapeLayer) -> ()] = [
         "fill": SVGGroup.fillGroup,
         "fill-rule": SVGGroup.fillRuleGroup,
         "opacity": SVGGroup.fillOpacityGroup,
@@ -50,8 +49,7 @@ final class SVGGroup: SVGContainerElement {
         "stroke-width": SVGGroup.strokeWidthGroup
     ]
     
-    /// :nodoc:
-    internal static let elementName = "g"
+        internal static let elementName = "g"
     
     /// Store all attributes and values to be applied after all known sublayers have been added to this container
     internal var delayedAttributes = [String : String]()
@@ -59,8 +57,7 @@ final class SVGGroup: SVGContainerElement {
     /// A `CALayer` that will hold all sublayers of the `SVGGroup`
     internal var containerLayer = CALayer()
     
-    /// :nodoc:
-    internal var supportedAttributes = [String : (String) -> ()]()
+        internal var supportedAttributes = [String : (String) -> ()]()
     
     /// The function that is called after all of this group's subelements have been processed. It will apply all stored `delayedAttributes` on all sublayers
     internal func didProcessElement(in container: SVGContainerElement?) {

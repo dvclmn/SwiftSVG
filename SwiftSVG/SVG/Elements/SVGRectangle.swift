@@ -38,17 +38,14 @@
 
 final class SVGRectangle: SVGShapeElement {
     
-    /// :nodoc:
-    internal static let elementName = "rect"
+        internal static let elementName = "rect"
     
     /// The CGRect for the rectangle
     internal var rectangleRect = CGRect()
     
-    /// :nodoc:
-    internal var svgLayer = CAShapeLayer()
+        internal var svgLayer = CAShapeLayer()
     
-    /// :nodoc:
-    internal var supportedAttributes: [String : (String) -> ()] = [:]
+        internal var supportedAttributes: [String : (String) -> ()] = [:]
     
     /// The x radius of the corner oval. Defaults to `0`
     internal var xCornerRadius = CGFloat(0.0)

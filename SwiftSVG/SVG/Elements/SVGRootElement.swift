@@ -38,8 +38,7 @@
 
 struct SVGRootElement: SVGContainerElement {
     
-    /// :nodoc:
-    internal static let elementName = "svg"
+        internal static let elementName = "svg"
     
     // :nodoc:
     internal var delayedAttributes = [String : String]()
@@ -64,8 +63,7 @@ struct SVGRootElement: SVGContainerElement {
         }
     }
     
-    /// :nodoc:
-    internal func didProcessElement(in container: SVGContainerElement?) {
+        internal func didProcessElement(in container: SVGContainerElement?) {
         return
     }
     

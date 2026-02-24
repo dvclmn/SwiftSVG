@@ -30,7 +30,6 @@
 
 import Foundation
 
-/// :nodoc:
 private struct StylableConstants {
     static let attributesRegex = "(((\\w+)-?(\\w*)?):?([ #\\w]*\\.?\\w+))"
 }

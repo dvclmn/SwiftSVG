@@ -39,8 +39,7 @@
 
 final class SVGLine: SVGShapeElement {
     
-    /// :nodoc:
-    internal static let elementName = "line"
+        internal static let elementName = "line"
     
     /// The line's end point. Defaults to `CGPoint.zero`
     internal var end = CGPoint.zero
@@ -48,11 +47,9 @@ final class SVGLine: SVGShapeElement {
     /// The line's end point. Defaults to `CGPoint.zero`
     internal var start = CGPoint.zero
     
-    /// :nodoc:
-    internal var svgLayer = CAShapeLayer()
+        internal var svgLayer = CAShapeLayer()
     
-    /// :nodoc:
-    internal var supportedAttributes: [String : (String) -> ()] = [:]
+        internal var supportedAttributes: [String : (String) -> ()] = [:]
     
     /// Function parses a number string and sets this line's start `x`
     internal func x1(x1: String) {

@@ -37,8 +37,7 @@
 /// Concrete implementation that creates a `CAShapeLayer` from a `<ellipse>` element and its attributes
 final class SVGEllipse: SVGShapeElement {
     
-    /// :nodoc:
-    internal static let elementName = "ellipse"
+        internal static let elementName = "ellipse"
     
     /// The ellipse's center point. Defaults to `CGRect.zero`
     internal var ellipseCenter = CGPoint.zero
@@ -49,11 +48,9 @@ final class SVGEllipse: SVGShapeElement {
     /// The ellipse's x radius. Defaults to `CGRect.zero`
     internal var yRadius: CGFloat = 0
     
-    /// :nodoc:
-    internal var svgLayer = CAShapeLayer()
+        internal var svgLayer = CAShapeLayer()
     
-    /// :nodoc:
-    internal var supportedAttributes: [String : (String) -> ()] = [:]
+        internal var supportedAttributes: [String : (String) -> ()] = [:]
     
     /// Function that parses the number string and sets this instance's x radius
     internal func xRadius(r: String) {

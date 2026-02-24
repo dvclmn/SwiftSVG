@@ -96,25 +96,19 @@ internal struct PathDLexer: IteratorProtocol, Sequence {
     /// Generates a `PathCommand`
     typealias Element = PathCommand
     
-    /// :nodoc:
-    private var currentCharacter: CChar {
+        private var currentCharacter: CChar {
         return self.workingString[self.iteratorIndex]
     }
     
-    /// :nodoc:
-    private var currentCommand: PathCommand? = nil
+        private var currentCommand: PathCommand? = nil
     
-    /// :nodoc:
-    private var iteratorIndex: Int = 0
+        private var iteratorIndex: Int = 0
     
-    /// :nodoc:
-    private var numberArray = [CChar]()
+        private var numberArray = [CChar]()
     
-    /// :nodoc:
-    private let pathString: String
+        private let pathString: String
     
-    /// :nodoc:
-    private let workingString: ContiguousArray<CChar>
+        private let workingString: ContiguousArray<CChar>
     
     /// Initializer for creating a new `PathDLexer` from a path d string
     internal init(pathString: String) {

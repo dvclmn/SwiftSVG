@@ -45,31 +45,24 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     case invalidURL
   }
 
-  /// :nodoc:
-  fileprivate var asyncParseCount: Int = 0
+    fileprivate var asyncParseCount: Int = 0
 
-  /// :nodoc:
-  fileprivate var didDispatchAllElements = true
+    fileprivate var didDispatchAllElements = true
 
-  /// :nodoc:
-  fileprivate var elementStack = Stack<SVGElement>()
+    fileprivate var elementStack = Stack<SVGElement>()
 
-  /// :nodoc:
-  public var completionBlock: SVGResult?
+    public var completionBlock: SVGResult?
   //    public var completionBlock: ((SVGLayer) -> ())?
 
-  /// :nodoc:
-  public var supportedElements: SVGParserSupportedElements? = nil
+    public var supportedElements: SVGParserSupportedElements? = nil
 
   /// The `SVGLayer` that will contain all of the SVG's sublayers
   open var containerLayer = SVGLayer()
 
-  /// :nodoc:
-  let asyncCountQueue = DispatchQueue(
+    let asyncCountQueue = DispatchQueue(
     label: "com.straussmade.swiftsvg.asyncCountQueue.serial", qos: .userInteractive)
 
-  /// :nodoc:
-  private init() {
+    private init() {
     super.init(data: Data())
   }
 
@@ -90,8 +83,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     }
   }
 
-  /// :nodoc:
-  @available(*, deprecated, renamed: "init(svgURL:supportedElements:completion:)")
+    @available(*, deprecated, renamed: "init(svgURL:supportedElements:completion:)")
   public convenience init(
     SVGURL: URL, supportedElements: SVGParserSupportedElements? = nil, completion: SVGResult? = nil
   ) {
@@ -113,8 +105,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     self.completionBlock = completion
   }
 
-  /// :nodoc:
-  @available(*, deprecated, renamed: "init(svgData:supportedElements:completion:)")
+    @available(*, deprecated, renamed: "init(svgData:supportedElements:completion:)")
   public convenience init(
     SVGData: Data,
     supportedElements: SVGParserSupportedElements? = SVGParserSupportedElements.allSupportedElements,

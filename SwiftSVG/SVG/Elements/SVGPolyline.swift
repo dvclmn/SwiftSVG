@@ -38,14 +38,11 @@
 
 struct SVGPolyline: SVGShapeElement {
     
-    /// :nodoc:
-    internal static let elementName = "polyline"
+        internal static let elementName = "polyline"
     
-    /// :nodoc:
-    internal var supportedAttributes: [String : (String) -> ()] = [:]
+        internal var supportedAttributes: [String : (String) -> ()] = [:]
     
-    /// :nodoc:
-    internal var svgLayer = CAShapeLayer()
+        internal var svgLayer = CAShapeLayer()
     
     /// Parses a coordinate string and creates a new polyline based on them
     internal func points(points: String) {
@@ -60,8 +57,7 @@ struct SVGPolyline: SVGShapeElement {
         self.svgLayer.path = polylinePath.cgPath
     }
     
-    /// :nodoc:
-    internal func didProcessElement(in container: SVGContainerElement?) {
+        internal func didProcessElement(in container: SVGContainerElement?) {
         guard let container = container else {
             return
         }

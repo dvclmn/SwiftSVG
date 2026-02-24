@@ -37,26 +37,21 @@
 /// Concrete implementation that creates a `CAShapeLayer` from a `<path>` element and its attributes
 final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttributes {
     
-    /// :nodoc:
-    internal static let elementName = "path"
+        internal static let elementName = "path"
     
     /// Attributes that are applied after the path has been processed
     internal var delayedAttributes = [String : String]()
     
-    /// :nodoc:
-    internal var asyncParseManager: CanManageAsychronousParsing? = nil
+        internal var asyncParseManager: CanManageAsychronousParsing? = nil
     
     /// Flag that sets whether the path should be parsed asynchronously or not
     internal var shouldParseAsynchronously = true
     
-    /// :nodoc:
-    internal var supportedAttributes = [String : (String) -> ()]()
+        internal var supportedAttributes = [String : (String) -> ()]()
     
-    /// :nodoc:
-    internal var svgLayer = CAShapeLayer()
+        internal var svgLayer = CAShapeLayer()
     
-    /// :nodoc:
-    internal init() { }
+        internal init() { }
     
     /// Initializer to to set the `svgLayer`'s cgPath. The path string does not have to be a single path for the whole element, but can include multiple subpaths in the `d` attribute. For instance, the following is a valid path string to pass:
     /// ```
@@ -121,8 +116,7 @@ final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttrib
         
     }
     
-    /// :nodoc:
-    internal func didProcessElement(in container: SVGContainerElement?) {
+        internal func didProcessElement(in container: SVGContainerElement?) {
         guard let container = container else {
             return
         }

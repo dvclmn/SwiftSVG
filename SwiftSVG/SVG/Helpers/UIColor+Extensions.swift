@@ -161,8 +161,7 @@ extension UIColor {
     self.init(colorValuesString: valuesString)
   }
 
-  /// :nodoc:
-  private convenience init(colorValuesString: Substring) {
+    private convenience init(colorValuesString: Substring) {
     let colorsArray =
       colorValuesString
       .split(separator: ",")

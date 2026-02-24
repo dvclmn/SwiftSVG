@@ -110,17 +110,13 @@ extension PathCommand {
 /// The `PathCommand` that corresponds to the SVG `M` or `m` command
 internal struct MoveTo: PathCommand {
 
-  /// :nodoc:
-  internal var coordinateBuffer: [Double] = []
+    internal var coordinateBuffer: [Double] = []
 
-  /// :nodoc:
-  internal let numberOfRequiredParameters = 2
+    internal let numberOfRequiredParameters = 2
 
-  /// :nodoc:
-  internal let pathType: PathType
+    internal let pathType: PathType
 
-  /// :nodoc:
-  internal init(pathType: PathType) {
+    internal init(pathType: PathType) {
     self.pathType = pathType
   }
 
@@ -150,17 +146,13 @@ internal struct MoveTo: PathCommand {
 /// The `PathCommand` that corresponds to the SVG `Z` or `z` command
 internal struct ClosePath: PathCommand {
 
-  /// :nodoc:
-  internal var coordinateBuffer: [Double] = []
+    internal var coordinateBuffer: [Double] = []
 
-  /// :nodoc:
-  internal let numberOfRequiredParameters = 0
+    internal let numberOfRequiredParameters = 0
 
-  /// :nodoc:
-  internal var pathType: PathType = .absolute
+    internal var pathType: PathType = .absolute
 
-  /// :nodoc:
-  internal init(pathType: PathType) {
+    internal init(pathType: PathType) {
     self.pathType = pathType
   }
 
@@ -174,17 +166,13 @@ internal struct ClosePath: PathCommand {
 /// The `PathCommand` that corresponds to the SVG `L` or `l` command
 internal struct LineTo: PathCommand {
 
-  /// :nodoc:
-  internal var coordinateBuffer: [Double] = []
+    internal var coordinateBuffer: [Double] = []
 
-  /// :nodoc:
-  internal let numberOfRequiredParameters = 2
+    internal let numberOfRequiredParameters = 2
 
-  /// :nodoc:
-  internal let pathType: PathType
+    internal let pathType: PathType
 
-  /// :nodoc:
-  internal init(pathType: PathType) {
+    internal init(pathType: PathType) {
     self.pathType = pathType
   }
 
@@ -199,17 +187,13 @@ internal struct LineTo: PathCommand {
 /// The `PathCommand` that corresponds to the SVG `H` or `h` command
 internal struct HorizontalLineTo: PathCommand {
 
-  /// :nodoc:
-  internal var coordinateBuffer: [Double] = []
+    internal var coordinateBuffer: [Double] = []
 
-  /// :nodoc:
-  internal let numberOfRequiredParameters = 1
+    internal let numberOfRequiredParameters = 1
 
-  /// :nodoc:
-  internal let pathType: PathType
+    internal let pathType: PathType
 
-  /// :nodoc:
-  internal init(pathType: PathType) {
+    internal init(pathType: PathType) {
     self.pathType = pathType
   }
 
@@ -227,17 +211,13 @@ internal struct HorizontalLineTo: PathCommand {
 /// The `PathCommand` that corresponds to the SVG `V` or `v` command
 internal struct VerticalLineTo: PathCommand {
 
-  /// :nodoc:
-  internal var coordinateBuffer: [Double] = []
+    internal var coordinateBuffer: [Double] = []
 
-  /// :nodoc:
-  internal let numberOfRequiredParameters = 1
+    internal let numberOfRequiredParameters = 1
 
-  /// :nodoc:
-  internal let pathType: PathType
+    internal let pathType: PathType
 
-  /// :nodoc:
-  internal init(pathType: PathType) {
+    internal init(pathType: PathType) {
     self.pathType = pathType
   }
 
@@ -255,17 +235,13 @@ internal struct VerticalLineTo: PathCommand {
 /// The `PathCommand` that corresponds to the SVG `C` or `c` command
 internal struct CurveTo: PathCommand {
 
-  /// :nodoc:
-  internal var coordinateBuffer: [Double] = []
+    internal var coordinateBuffer: [Double] = []
 
-  /// :nodoc:
-  internal let numberOfRequiredParameters = 6
+    internal let numberOfRequiredParameters = 6
 
-  /// :nodoc:
-  internal let pathType: PathType
+    internal let pathType: PathType
 
-  /// :nodoc:
-  internal init(pathType: PathType) {
+    internal init(pathType: PathType) {
     self.pathType = pathType
   }
 
@@ -284,17 +260,13 @@ internal struct CurveTo: PathCommand {
 /// The `PathCommand` that corresponds to the SVG `S` or `s` command
 internal struct SmoothCurveTo: PathCommand {
 
-  /// :nodoc:
-  internal var coordinateBuffer: [Double] = []
+    internal var coordinateBuffer: [Double] = []
 
-  /// :nodoc:
-  internal let numberOfRequiredParameters = 4
+    internal let numberOfRequiredParameters = 4
 
-  /// :nodoc:
-  internal let pathType: PathType
+    internal let pathType: PathType
 
-  /// :nodoc:
-  internal init(pathType: PathType) {
+    internal init(pathType: PathType) {
     self.pathType = pathType
   }
 
@@ -353,17 +325,13 @@ internal struct SmoothCurveTo: PathCommand {
 /// The `PathCommand` that corresponds to the SVG `Q` or `q` command
 internal struct QuadraticCurveTo: PathCommand {
 
-  /// :nodoc:
-  internal var coordinateBuffer: [Double] = []
+    internal var coordinateBuffer: [Double] = []
 
-  /// :nodoc:
-  internal let numberOfRequiredParameters = 4
+    internal let numberOfRequiredParameters = 4
 
-  /// :nodoc:
-  internal let pathType: PathType
+    internal let pathType: PathType
 
-  /// :nodoc:
-  internal init(pathType: PathType) {
+    internal init(pathType: PathType) {
     self.pathType = pathType
   }
 
@@ -379,20 +347,15 @@ internal struct QuadraticCurveTo: PathCommand {
 /// The `PathCommand` that corresponds to the SVG `T` or `t` command
 internal struct SmoothQuadraticCurveTo: PathCommand {
 
-  /// :nodoc:
-  internal var coordinateBuffer: [Double] = []
+    internal var coordinateBuffer: [Double] = []
 
-  /// :nodoc:
-  internal let numberOfRequiredParameters = 2
+    internal let numberOfRequiredParameters = 2
 
-  /// :nodoc:
-  internal let pathType: PathType
+    internal let pathType: PathType
 
-  /// :nodoc:
-  internal var previousControlPoint: CGPoint? = nil
+    internal var previousControlPoint: CGPoint? = nil
 
-  /// :nodoc:
-  internal init(pathType: PathType) {
+    internal init(pathType: PathType) {
     self.pathType = pathType
   }
 
@@ -432,22 +395,17 @@ internal struct SmoothQuadraticCurveTo: PathCommand {
 // - TODO: Still needs an implementation
 internal struct EllipticalArc: PathCommand {
 
-  /// :nodoc:
-  internal var coordinateBuffer: [Double] = []
+    internal var coordinateBuffer: [Double] = []
 
-  /// :nodoc:
-  internal let numberOfRequiredParameters = 2
+    internal let numberOfRequiredParameters = 2
 
-  /// :nodoc:
-  internal let pathType: PathType
+    internal let pathType: PathType
 
-  /// :nodoc:
-  internal init(pathType: PathType) {
+    internal init(pathType: PathType) {
     self.pathType = pathType
   }
 
-  /// :nodoc:
-  internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
+    internal func execute(on path: UIBezierPath, previousCommand: PreviousCommand? = nil) {
     assert(false, "Needs Implementation")
   }
 }

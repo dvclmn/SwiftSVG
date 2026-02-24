@@ -95,8 +95,7 @@ open class SVGView : UIView {
         }
     }
     
-    /// :nodoc:
-    @available(*, deprecated, renamed: "svgName")
+        @available(*, deprecated, renamed: "svgName")
     open var SVGName: String?
 }
 

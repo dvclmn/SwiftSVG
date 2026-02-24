@@ -51,8 +51,7 @@ extension CALayer {
     }
   }
 
-  /// :nodoc:
-  @available(*, deprecated, renamed: "init(svgURL:parser:completion:)")
+    @available(*, deprecated, renamed: "init(svgURL:parser:completion:)")
   @discardableResult
   public convenience init(SVGURL: URL, parser: SVGParser? = nil, completion: @escaping SVGResult) {
     self.init(svgURL: SVGURL, parser: parser, completion: completion)
@@ -109,8 +108,7 @@ extension CALayer {
     }
   }
 
-  /// :nodoc:
-  @available(*, deprecated, renamed: "init(svgData:parser:completion:)")
+    @available(*, deprecated, renamed: "init(svgData:parser:completion:)")
   @discardableResult
   public convenience init(SVGData: Data, parser: SVGParser? = nil, completion: @escaping SVGResult) {
     self.init()
