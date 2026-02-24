@@ -72,13 +72,16 @@ open class SVGLayer: CAShapeLayer, SVGLayerType {
   /// The minimum CGRect that fits all subpaths
   public var boundingBox = CGRect.null
 
+  /// Corresponds to attribute `viewBox` e.g. `<svg viewBox="0 0 120 80">`
   /// Defines the internal coordinate system for the SVG’s contents
   public var viewBox: CGRect?
 
+  /// Corresponds to `width` and `height` e.g. `<svg width="90" height="30">`
   /// Establishes the viewport size the SVG author intended for rendering/layout.
-  /// Useful only when width/height are resolvable to concrete lengths.
+  ///
+  /// Note: Useful only when width/height are resolvable to concrete lengths.
   /// Aka not percentages etc
-  public var documentSize: CGSize?
+  public var viewportSize: CGSize?
 }
 
 extension SVGLayer {

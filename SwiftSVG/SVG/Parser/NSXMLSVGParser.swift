@@ -36,7 +36,6 @@ import AppKit
 extension NSXMLSVGParser: SVGParser {}
 
 /// Concrete implementation of `SVGParser` that uses Foundation's `XMLParser` to parse a given SVG file.
-
 open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
 
   /// Error type used when a fatal error has occured
@@ -45,49 +44,23 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     case invalidURL
   }
 
-    fileprivate var asyncParseCount: Int = 0
+  fileprivate var asyncParseCount: Int = 0
+  fileprivate var didDispatchAllElements = true
+  fileprivate var elementStack = Stack<SVGElement>()
 
-    fileprivate var didDispatchAllElements = true
-
-    fileprivate var elementStack = Stack<SVGElement>()
-
-    public var completionBlock: SVGResult?
-  //    public var completionBlock: ((SVGLayer) -> ())?
-
-    public var supportedElements: SVGParserSupportedElements? = nil
+  public var completionBlock: SVGResult?
+  public var supportedElements: SVGParserSupportedElements? = nil
 
   /// The `SVGLayer` that will contain all of the SVG's sublayers
   open var containerLayer = SVGLayer()
 
-    let asyncCountQueue = DispatchQueue(
-    label: "com.straussmade.swiftsvg.asyncCountQueue.serial", qos: .userInteractive)
+  let asyncCountQueue = DispatchQueue(
+    label: "com.straussmade.swiftsvg.asyncCountQueue.serial",
+    qos: .userInteractive
+  )
 
-    private init() {
+  private init() {
     super.init(data: Data())
-  }
-
-  /// Convenience initializer that can initalize an `NSXMLSVGParser` using a local or remote `URL`
-  /// - parameter svgURL: The URL of the SVG.
-  /// - parameter supportedElements: Optional `SVGParserSupportedElements` struct that restrict the elements and attributes that this parser can parse.If no value is provided, all supported attributes will be used.
-  /// - parameter completion: Optional completion block that will be executed after all elements and attribites have been parsed.
-  public convenience init(
-    svgURL: URL, supportedElements: SVGParserSupportedElements? = nil, completion: SVGResult? = nil
-  ) {
-
-    do {
-      let urlData = try Data(contentsOf: svgURL)
-      self.init(svgData: urlData, supportedElements: supportedElements, completion: completion)
-    } catch {
-      self.init()
-      print("Couldn't get data from URL")
-    }
-  }
-
-    @available(*, deprecated, renamed: "init(svgURL:supportedElements:completion:)")
-  public convenience init(
-    SVGURL: URL, supportedElements: SVGParserSupportedElements? = nil, completion: SVGResult? = nil
-  ) {
-    self.init(svgURL: SVGURL, supportedElements: supportedElements, completion: completion)
   }
 
   /// Initializer that can initalize an `NSXMLSVGParser` using SVG `Data`
@@ -96,7 +69,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
   /// - parameter completion: Optional completion block that will be executed after all elements and attribites have been parsed.
   public required init(
     svgData: Data,
-    supportedElements: SVGParserSupportedElements? = SVGParserSupportedElements.allSupportedElements,
+    supportedElements: SVGParserSupportedElements? = .allSupportedElements,
     completion: SVGResult? = nil
   ) {
     super.init(data: svgData)
@@ -105,15 +78,56 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     self.completionBlock = completion
   }
 
-    @available(*, deprecated, renamed: "init(svgData:supportedElements:completion:)")
+}
+
+extension NSXMLSVGParser {
+
+  /// Convenience initializer that can initalize an `NSXMLSVGParser` using a local or remote `URL`
+  /// - parameter svgURL: The URL of the SVG.
+  /// - parameter supportedElements: Optional `SVGParserSupportedElements` struct that restrict the elements and attributes that this parser can parse.If no value is provided, all supported attributes will be used.
+  /// - parameter completion: Optional completion block that will be executed after all elements and attribites have been parsed.
+  public convenience init(
+    svgURL: URL,
+    supportedElements: SVGParserSupportedElements? = nil,
+    completion: SVGResult? = nil
+  ) {
+    do {
+      let urlData = try Data(contentsOf: svgURL)
+      self.init(
+        svgData: urlData,
+        supportedElements: supportedElements,
+        completion: completion
+      )
+    } catch {
+      self.init()
+      print("Couldn't get data from URL. Error: \(error)")
+    }
+  }
+}
+
+// MARK: - Deprecations
+extension NSXMLSVGParser {
+
+  @available(*, deprecated, renamed: "init(svgURL:supportedElements:completion:)")
+  public convenience init(
+    SVGURL: URL,
+    supportedElements: SVGParserSupportedElements? = nil,
+    completion: SVGResult? = nil
+  ) {
+    self.init(svgURL: SVGURL, supportedElements: supportedElements, completion: completion)
+  }
+
+  @available(*, deprecated, renamed: "init(svgData:supportedElements:completion:)")
   public convenience init(
     SVGData: Data,
-    supportedElements: SVGParserSupportedElements? = SVGParserSupportedElements.allSupportedElements,
+    supportedElements: SVGParserSupportedElements? = .allSupportedElements,
     completion: SVGResult? = nil
   ) {
     self.init(svgData: SVGData, supportedElements: supportedElements, completion: completion)
   }
+}
 
+extension NSXMLSVGParser {
   /// Starts parsing the SVG document
   public func startParsing() {
     self.asyncCountQueue.sync {
@@ -122,12 +136,25 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     self.parse()
   }
 
-  /// The `XMLParserDelegate` method called when the parser has started parsing an SVG element. This implementation will loop through all supported attributes and dispatch the attribiute value to the given curried function.
+  /// The `XMLParserDelegate` method called when the parser has started parsing an SVG element. This implementation will loop through all supported attributes and dispatch the attribute value to the given curried function.
   open func parser(
-    _ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?,
-    qualifiedName qName: String?, attributes attributeDict: [String: String]
+    _ parser: XMLParser,
+    didStartElement elementName: String,
+    namespaceURI: String?,
+    qualifiedName qName: String?,
+    attributes attributeDict: [String: String]
   ) {
 
+    print(
+      """
+      ---
+      Parsing \(elementName) at \(Date.debug)
+      Namespace: \(String(describing: namespaceURI))
+      Qualified name: \(String(describing: qName))
+      Attributes: \(attributeDict)
+      ---
+
+      """)
     guard let elementType = self.supportedElements?.tags[elementName] else {
       print(
         "\(elementName) is unsupported. For a complete list of supported elements, see the `allSupportedElements` variable in the `SVGParserSupportedElements` struct. Click through on the `elementName` variable name to see the SVG tag name."
@@ -150,6 +177,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
       }
     }
 
+    print("Adding SVG Element \(svgElement) to stack")
     self.elementStack.push(svgElement)
   }
 
@@ -159,7 +187,9 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
   ///
   /// If the parser has finished parsing a `<svg>` element, that `SVGRootElement`'s container layer is added to this parser's `containerLayer`.
   open func parser(
-    _ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?,
+    _ parser: XMLParser,
+    didEndElement elementName: String,
+    namespaceURI: String?,
     qualifiedName qName: String?
   ) {
 
@@ -214,21 +244,21 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
   /// - SeeAlso: `XMLParserDelegate` (`parser(_:parseErrorOccurred:)`)[https://developer.apple.com/documentation/foundation/xmlparserdelegate/1412379-parser]
   /// - SeeAlso: (SVG Validator)[https://validator.w3.org/]
   public func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
-//    print("Parse Error: \(parseError)")
-    
+    //    print("Parse Error: \(parseError)")
+
     DispatchQueue.main.safeAsync {
       self.completionBlock?(.failure(parseError))
       self.completionBlock = nil
     }
-    
-//    let code = (parseError as NSError).code
-//    switch code {
-//      case 76:
-//        print("Invalid XML: \(SVGParserError.invalidSVG)")
-//      default:
-//        print("Some other kind of Error: \(parseError)")
-//        break
-//    }
+
+    //    let code = (parseError as NSError).code
+    //    switch code {
+    //      case 76:
+    //        print("Invalid XML: \(SVGParserError.invalidSVG)")
+    //      default:
+    //        print("Some other kind of Error: \(parseError)")
+    //        break
+    //    }
   }
 
 }
