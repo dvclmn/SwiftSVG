@@ -38,7 +38,7 @@ struct SVGPolyline: SVGShapeElement {
 
   internal static let elementName = "polyline"
 
-  internal var supportedAttributes: [String: (String) -> Void] = [:]
+  internal var supportedAttributes: SVGAttributes = [:]
 
   internal var svgLayer = CAShapeLayer()
 

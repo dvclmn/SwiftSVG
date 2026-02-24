@@ -45,7 +45,7 @@ final class SVGCircle: SVGShapeElement {
 
     internal var svgLayer = CAShapeLayer()
 
-    internal var supportedAttributes: [String: (String) -> Void] = [:]
+    internal var supportedAttributes: SVGAttributes = [:]
 
   /// Function that parses the number string and sets this instance's radius
   internal func radius(r: String) {

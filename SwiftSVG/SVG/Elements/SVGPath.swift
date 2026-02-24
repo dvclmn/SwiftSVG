@@ -45,7 +45,7 @@ final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttrib
   /// Flag that sets whether the path should be parsed asynchronously or not
   internal var shouldParseAsynchronously = true
 
-  internal var supportedAttributes: [String: (String) -> Void] = [:]
+  internal var supportedAttributes: SVGAttributes = [:]
 
   internal var svgLayer = CAShapeLayer()
 
@@ -131,7 +131,7 @@ extension SVGPath: CustomStringConvertible {
     Element Name: \(Self.elementName)
     Parsing Asynchronously? \(shouldParseAsynchronously)
     Delayed Attributes: \(delayedAttributes.prettyPrinted(valueMaxLength: 26))
-    Supported Attributes:\n\(supportedAttributes.map(\.key).joined(separator: .indentString))
+    Supported Attributes: \(supportedAttributes.debugString)
     """
   }
 }

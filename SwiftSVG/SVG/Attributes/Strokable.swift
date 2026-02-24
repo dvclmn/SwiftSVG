@@ -53,7 +53,7 @@ extension Strokable where Self: SVGShapeElement {
   /// The curried functions to be used for the `SVGShapeElement`'s default implementation. This dictionary is meant to be used in the `SVGParserSupportedElements` instance
   /// - parameter Key: The SVG string value of the attribute
   /// - parameter Value: A curried function to use to implement the SVG attribute
-  internal var strokeAttributes: [String: (String) -> Void] {
+  internal var strokeAttributes: SVGAttributes {
     return [
       "stroke": self.strokeColor,
       "stroke-linecap": self.strokeLineCap,
@@ -110,7 +110,7 @@ extension Strokable where Self: SVGGroup {
   /// The curried functions to be used for the `SVGGroup`'s default implementation. This dictionary is meant to be used in the `SVGParserSupportedElements` instance
   /// - parameter Key: The SVG string value of the attribute
   /// - parameter Value: A curried function to use to implement the SVG attribute
-  var strokeAttributes: [String: (String) -> Void] {
+  var strokeAttributes: SVGAttributes {
     return [
       "stroke": unown(self, SVGGroup.strokeColor),
       "stroke-linecap": unown(self, SVGGroup.strokeLineCap),

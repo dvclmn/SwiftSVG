@@ -32,7 +32,7 @@ import UIKit
 import AppKit
 #endif
 
-typealias SVGAttributes = [String: (String) -> Void]
+public typealias SVGAttributes = [String: (String) -> Void]
 
 /// Concrete implementation that creates a container from a `<svg>` element and its attributes.
 /// This will almost always be the root container element that will container all other `SVGElement` layers
@@ -41,7 +41,7 @@ struct SVGRootElement: SVGContainerElement {
   internal static let elementName = "svg"
   internal var delayedAttributes: [String: String] = [:]
   internal var containerLayer = CALayer()
-  internal var supportedAttributes: [String: (String) -> Void] = [:]
+  internal var supportedAttributes: SVGAttributes = [:]
 
   /// Function that parses a number string and sets the `containerLayer`'s width
   internal func parseWidth(lengthString: String) {
@@ -86,8 +86,13 @@ extension SVGRootElement: CustomStringConvertible {
     """
     Element Name: \(Self.elementName)
     Delayed Attributes: \(delayedAttributes.prettyPrinted(valueMaxLength: 26))
-    Supported Attributes:\(.indentString + supportedAttributes.map(\.key).joined(separator: .indentString))
+    Supported Attributes: \(supportedAttributes.debugString)
     """
   }
 }
 
+extension SVGAttributes {
+  public var debugString: String {
+    "\(.indentString + keys.joined(separator: .indentString))"
+  }
+}

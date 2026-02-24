@@ -58,7 +58,7 @@ public protocol SVGElement {
   /// Dictionary of attributes of a given element that are supported by the `SVGParser`.
   /// Keys are the name of an element's attribute such as `d`, `fill`, and `rx`.
   /// Values are a closure that is used to process the given attribute.
-  var supportedAttributes: [String: (String) -> Void] { get set }
+  var supportedAttributes: SVGAttributes { get set }
 
   /// An action to perform once the parser has dispatched all attributes to a given `SVGElement` instance
   /// - Note: If using the default `NSXMLSVGParser` and the element parses asynchronously,
@@ -70,7 +70,7 @@ extension SVGElement where Self: CustomStringConvertible {
   public var description: String {
     """
     Element Name: \(Self.elementName)
-    Supported Attributes:\(.indentString)\(supportedAttributes.keys.joined(separator: .indentString))
+    Supported Attributes: \(supportedAttributes.debugString)
     """
   }
 }

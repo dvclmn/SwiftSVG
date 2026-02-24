@@ -42,7 +42,7 @@ extension Stylable where Self: SVGElement {
   /// This dictionary is meant to be used in the `SVGParserSupportedElements` instance
   /// - parameter Key: The SVG string value of the attribute
   /// - parameter Value: A curried function to use to implement the SVG attribute
-  var styleAttributes: [String: (String) -> Void] {
+  var styleAttributes: SVGAttributes {
     return [
       "style": self.style
     ]
@@ -54,7 +54,7 @@ extension Stylable where Self: SVGGroup {
   /// This dictionary is meant to be used in the `SVGParserSupportedElements` instance
   /// - parameter Key: The SVG string value of the attribute
   /// - parameter Value: A curried function to use to implement the SVG attribute
-  var styleAttributes: [String: (String) -> Void] {
+  var styleAttributes: SVGAttributes {
     return [
       "style": unown(self, SVGGroup.style)
     ]

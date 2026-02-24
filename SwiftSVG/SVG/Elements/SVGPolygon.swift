@@ -38,7 +38,7 @@ struct SVGPolygon: SVGShapeElement {
 
   internal static let elementName = "polygon"
 
-  internal var supportedAttributes: [String: (String) -> Void] = [:]
+  internal var supportedAttributes: SVGAttributes = [:]
 
   internal var svgLayer = CAShapeLayer()
 

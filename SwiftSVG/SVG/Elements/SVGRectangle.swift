@@ -43,7 +43,7 @@ final class SVGRectangle: SVGShapeElement {
 
   internal var svgLayer = CAShapeLayer()
 
-  internal var supportedAttributes: [String: (String) -> Void] = [:]
+  internal var supportedAttributes: SVGAttributes = [:]
 
   /// The x radius of the corner oval. Defaults to `0`
   internal var xCornerRadius = CGFloat(0.0)

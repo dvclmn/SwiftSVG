@@ -43,7 +43,7 @@ extension Fillable where Self: SVGShapeElement {
   /// The curried functions to be used for the `SVGShapeElement`'s default implementation. This dictionary is meant to be used in the `SVGParserSupportedElements` instance
   /// - parameter Key: The SVG string value of the attribute
   /// - parameter Value: A curried function to use to implement the SVG attribute
-  var fillAttributes: [String: (String) -> Void] {
+  var fillAttributes: SVGAttributes {
     return [
       "color": self.fill,
       "fill": self.fill,
@@ -93,7 +93,7 @@ extension Fillable where Self: SVGShapeElement {
 extension Fillable where Self: SVGGroup {
 
   ///The curried functions to be used for the `SVGGroup`'s default implementation. This dictionary is meant to be used in the `SVGParserSupportedElements` instance
-  var fillAttributes: [String: (String) -> Void] {
+  var fillAttributes: SVGAttributes {
     return [
       "color": unown(self, SVGGroup.fill),
       "fill": unown(self, SVGGroup.fill),
