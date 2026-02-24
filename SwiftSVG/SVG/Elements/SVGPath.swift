@@ -26,100 +26,112 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
-    import UIKit
+import UIKit
 #elseif os(OSX)
-    import AppKit
+import AppKit
 #endif
 
 /// Concrete implementation that creates a `CAShapeLayer` from a `<path>` element and its attributes
 final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttributes {
-    
-        internal static let elementName = "path"
-    
-    /// Attributes that are applied after the path has been processed
-    internal var delayedAttributes = [String : String]()
-    
-        internal var asyncParseManager: CanManageAsychronousParsing? = nil
-    
-    /// Flag that sets whether the path should be parsed asynchronously or not
-    internal var shouldParseAsynchronously = true
-    
-        internal var supportedAttributes = [String : (String) -> ()]()
-    
-        internal var svgLayer = CAShapeLayer()
-    
-        internal init() { }
-    
-    /// Initializer to to set the `svgLayer`'s cgPath. The path string does not have to be a single path for the whole element, but can include multiple subpaths in the `d` attribute. For instance, the following is a valid path string to pass:
-    /// ```
-    /// <path d="M30 20 L25 15 l10 50z M40 60 l80 10 l 35 55z">
-    /// ```
-    /// - parameter singlePathString: The `d` attribute value of a `<path>` element
-    internal init(singlePathString: String) {
-        self.shouldParseAsynchronously = false
-        self.parseD(singlePathString)
-    }
-    
-    /// Function that takes a `d` path string attribute and sets the `svgLayer`'s `cgPath`
-    internal func parseD(_ pathString: String) {
-        let workingString = pathString.trimWhitespace()
-        assert(workingString.hasPrefix("M") || workingString.hasPrefix("m"), "Path d attribute must begin with MoveTo Command (\"M\")")
-        autoreleasepool { () -> () in
-            
-            let pathDPath = UIBezierPath()
-            pathDPath.move(to: CGPoint.zero)
 
-            let parsePathClosure = {
-                var previousCommand: PreviousCommand? = nil
-                for thisPathCommand in PathDLexer(pathString: workingString) {
-                    thisPathCommand.execute(on: pathDPath, previousCommand: previousCommand)
-                    previousCommand = thisPathCommand
-                }
-            }
-            
-            if self.shouldParseAsynchronously {
-                
-                let concurrent = DispatchQueue(label: "com.straussmade.swiftsvg.path.concurrent", attributes: .concurrent)
-                
-                concurrent.async(execute: parsePathClosure)
-                concurrent.async(flags: .barrier) { [weak self] in
-                    guard var this = self else { return }
-                    this.svgLayer.path = pathDPath.cgPath
-                    this.applyDelayedAttributes()
-                    this.asyncParseManager?.finishedProcessing(this.svgLayer)
-                }
-                
-            } else {
-                parsePathClosure()
-                self.svgLayer.path = pathDPath.cgPath
-            }
+  internal static let elementName = "path"
+
+  /// Attributes that are applied after the path has been processed
+  internal var delayedAttributes: [String: String] = [:]
+
+  internal var asyncParseManager: CanManageAsychronousParsing? = nil
+
+  /// Flag that sets whether the path should be parsed asynchronously or not
+  internal var shouldParseAsynchronously = true
+
+  internal var supportedAttributes: [String: (String) -> Void] = [:]
+
+  internal var svgLayer = CAShapeLayer()
+
+  internal init() {}
+
+  /// Initializer to to set the `svgLayer`'s cgPath. The path string does not have to be a single path for the whole element, but can include multiple subpaths in the `d` attribute. For instance, the following is a valid path string to pass:
+  /// ```
+  /// <path d="M30 20 L25 15 l10 50z M40 60 l80 10 l 35 55z">
+  /// ```
+  /// - parameter singlePathString: The `d` attribute value of a `<path>` element
+  internal init(singlePathString: String) {
+    self.shouldParseAsynchronously = false
+    self.parseD(singlePathString)
+  }
+
+  /// Function that takes a `d` path string attribute and sets the `svgLayer`'s `cgPath`
+  internal func parseD(_ pathString: String) {
+    let workingString = pathString.trimWhitespace()
+    assert(
+      workingString.hasPrefix("M") || workingString.hasPrefix("m"),
+      "Path d attribute must begin with MoveTo Command (\"M\")")
+    autoreleasepool { () -> Void in
+
+      let pathDPath = UIBezierPath()
+      pathDPath.move(to: CGPoint.zero)
+
+      let parsePathClosure = {
+        var previousCommand: PreviousCommand? = nil
+        for thisPathCommand in PathDLexer(pathString: workingString) {
+          thisPathCommand.execute(on: pathDPath, previousCommand: previousCommand)
+          previousCommand = thisPathCommand
         }
+      }
+
+      if self.shouldParseAsynchronously {
+
+        let concurrent = DispatchQueue(
+          label: "com.straussmade.swiftsvg.path.concurrent", attributes: .concurrent)
+
+        concurrent.async(execute: parsePathClosure)
+        concurrent.async(flags: .barrier) { [weak self] in
+          guard var this = self else { return }
+          this.svgLayer.path = pathDPath.cgPath
+          this.applyDelayedAttributes()
+          this.asyncParseManager?.finishedProcessing(this.svgLayer)
+        }
+
+      } else {
+        parsePathClosure()
+        self.svgLayer.path = pathDPath.cgPath
+      }
     }
-    
-    /// The clip rule for this path to be applied after the path has been parsed
-    internal func clipRule(_ clipRule: String) {
-        guard let thisPath = self.svgLayer.path else {
-            self.delayedAttributes["clip-rule"] = clipRule
-            return
-        }
-        guard clipRule == "evenodd" else {
-            return
-        }
-        #if os(iOS) || os(tvOS)
-        let bezierPath = UIBezierPath(cgPath: thisPath)
-        bezierPath.usesEvenOddFillRule = true
-        self.svgLayer.path = bezierPath.cgPath
-        #endif
-        
+  }
+
+  /// The clip rule for this path to be applied after the path has been parsed
+  internal func clipRule(_ clipRule: String) {
+    guard let thisPath = self.svgLayer.path else {
+      self.delayedAttributes["clip-rule"] = clipRule
+      return
     }
-    
-        internal func didProcessElement(in container: SVGContainerElement?) {
-        guard let container = container else {
-            return
-        }
-        container.containerLayer.addSublayer(self.svgLayer)
+    guard clipRule == "evenodd" else {
+      return
     }
+    #if os(iOS) || os(tvOS)
+    let bezierPath = UIBezierPath(cgPath: thisPath)
+    bezierPath.usesEvenOddFillRule = true
+    self.svgLayer.path = bezierPath.cgPath
+    #endif
+
+  }
+
+  internal func didProcessElement(in container: SVGContainerElement?) {
+    guard let container = container else {
+      return
+    }
+    container.containerLayer.addSublayer(self.svgLayer)
+  }
+}
+
+extension SVGPath: CustomStringConvertible {
+  var description: String {
+    """
+    Element Name: \(Self.elementName)
+    Parsing Asynchronously? \(shouldParseAsynchronously)
+    Delayed Attributes: \(delayedAttributes.prettyPrinted(valueMaxLength: 26))
+    Supported Attributes:\n\(supportedAttributes.map(\.key).joined(separator: .indentString))
+    """
+  }
 }

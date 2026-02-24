@@ -26,58 +26,68 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
-    import UIKit
+import UIKit
 #elseif os(OSX)
-    import AppKit
+import AppKit
 #endif
 
-/// Concrete implementation that creates a container from a `<svg>` element and its attributes. This will almost always be the root container element that will container all other `SVGElement` layers
+typealias SVGAttributes = [String: (String) -> Void]
 
+/// Concrete implementation that creates a container from a `<svg>` element and its attributes.
+/// This will almost always be the root container element that will container all other `SVGElement` layers
 struct SVGRootElement: SVGContainerElement {
-    
-        internal static let elementName = "svg"
-    
-    // :nodoc:
-    internal var delayedAttributes = [String : String]()
-    
-    // :nodoc:
-    internal var containerLayer = CALayer()
-    
-    // :nodoc:
-    internal var supportedAttributes = [String : (String) -> ()]()
-    
-    /// Function that parses a number string and sets the `containerLayer`'s width
-    internal func parseWidth(lengthString: String) {
-        if let width = CGFloat(lengthString: lengthString) {
-            self.containerLayer.frame.size.width = width
-        }
+
+  internal static let elementName = "svg"
+  internal var delayedAttributes: [String: String] = [:]
+  internal var containerLayer = CALayer()
+  internal var supportedAttributes: [String: (String) -> Void] = [:]
+
+  /// Function that parses a number string and sets the `containerLayer`'s width
+  internal func parseWidth(lengthString: String) {
+    if let width = CGFloat(lengthString: lengthString) {
+      self.containerLayer.frame.size.width = width
     }
-    
-    /// Function that parses a number string and sets the `containerLayer`'s height
-    internal func parseHeight(lengthString: String) {
-        if let height = CGFloat(lengthString: lengthString) {
-            self.containerLayer.frame.size.height = height
-        }
+  }
+
+  /// Function that parses a number string and sets the `containerLayer`'s height
+  internal func parseHeight(lengthString: String) {
+    if let height = CGFloat(lengthString: lengthString) {
+      self.containerLayer.frame.size.height = height
     }
-    
-        internal func didProcessElement(in container: SVGContainerElement?) {
-        return
+  }
+
+  internal func didProcessElement(in container: SVGContainerElement?) {
+    return
+  }
+
+  internal func viewBox(coordinates: String) {
+    let points =
+      coordinates
+      .components(separatedBy: CharacterSet(charactersIn: ", "))
+      .compactMap { (thisString) -> Double? in
+        return Double(thisString.trimWhitespace())
+      }
+    print("View box results: \(points). OG string: \(coordinates)")
+    guard points.count == 4 else {
+      return
     }
-    
-    /// nodoc:
-    internal func viewBox(coordinates: String) {
-        let points = coordinates
-            .components(separatedBy: CharacterSet(charactersIn: ", "))
-            .compactMap { (thisString) -> Double? in
-               return Double(thisString.trimWhitespace())
-            }
-        guard points.count == 4 else {
-            return
-        }
-        self.containerLayer.frame = CGRect(x: points[0], y: points[1], width: points[2], height: points[3])
-    }
+    self.containerLayer.frame = CGRect(
+      x: points[0],
+      y: points[1],
+      width: points[2],
+      height: points[3]
+    )
+  }
+}
+
+extension SVGRootElement: CustomStringConvertible {
+  var description: String {
+    """
+    Element Name: \(Self.elementName)
+    Delayed Attributes: \(delayedAttributes.prettyPrinted(valueMaxLength: 26))
+    Supported Attributes:\(.indentString + supportedAttributes.map(\.key).joined(separator: .indentString))
+    """
+  }
 }
 

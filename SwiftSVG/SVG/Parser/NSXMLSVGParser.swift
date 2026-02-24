@@ -130,6 +130,14 @@ extension NSXMLSVGParser {
 extension NSXMLSVGParser {
   /// Starts parsing the SVG document
   public func startParsing() {
+
+    print(
+      """
+      =============================================
+      Parsing SVG  |  \(Date.debug) 
+      ---------------------------------------------
+
+      """)
     self.asyncCountQueue.sync {
       self.didDispatchAllElements = false
     }
@@ -147,18 +155,19 @@ extension NSXMLSVGParser {
 
     print(
       """
-      ---
-      Parsing \(elementName) at \(Date.debug)
+
+      Parsing element \"\(elementName)\" at \(Date.debug)
       Namespace: \(String(describing: namespaceURI))
       Qualified name: \(String(describing: qName))
-      Attributes: \(attributeDict)
-      ---
+      Attributes: \(attributeDict.prettyPrinted(valueMaxLength: 26))
+
 
       """)
     guard let elementType = self.supportedElements?.tags[elementName] else {
-      print(
-        "\(elementName) is unsupported. For a complete list of supported elements, see the `allSupportedElements` variable in the `SVGParserSupportedElements` struct. Click through on the `elementName` variable name to see the SVG tag name."
-      )
+      print("\(elementName) is unsupported, skipping.")
+      //      print(
+      //        "\(elementName) is unsupported. For a complete list of supported elements, see the `allSupportedElements` variable in the `SVGParserSupportedElements` struct. Click through on the `elementName` variable name to see the SVG tag name."
+      //      )
       return
     }
 
@@ -177,7 +186,7 @@ extension NSXMLSVGParser {
       }
     }
 
-    print("Adding SVG Element \(svgElement) to stack")
+    print("Adding to Stack:\n\(svgElement)")
     self.elementStack.push(svgElement)
   }
 
@@ -229,6 +238,16 @@ extension NSXMLSVGParser {
   /// - SeeAlso: `XMLParserDelegate` (`parserDidEndDocument(_:)`)[https://developer.apple.com/documentation/foundation/xmlparserdelegate/1418172-parserdidenddocument]
   public func parserDidEndDocument(_ parser: XMLParser) {
 
+    print(
+      """
+
+      ---------------------------------------------
+      Parsing Complete   |  \(Date.debug) 
+      Parse Count: \(asyncParseCount)
+      Sublayer count: \(containerLayer.sublayers?.count, default: "nil")
+      =============================================
+      """)
+
     self.asyncCountQueue.sync {
       self.didDispatchAllElements = true
     }
@@ -244,7 +263,7 @@ extension NSXMLSVGParser {
   /// - SeeAlso: `XMLParserDelegate` (`parser(_:parseErrorOccurred:)`)[https://developer.apple.com/documentation/foundation/xmlparserdelegate/1412379-parser]
   /// - SeeAlso: (SVG Validator)[https://validator.w3.org/]
   public func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
-    //    print("Parse Error: \(parseError)")
+    print("Parse Error: \(parseError.localizedDescription)")
 
     DispatchQueue.main.safeAsync {
       self.completionBlock?(.failure(parseError))
