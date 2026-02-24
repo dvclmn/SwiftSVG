@@ -10,7 +10,7 @@ import Foundation
 extension Dictionary {
 
   public func prettyPrinted(
-    valueMaxLength: Int? = nil,
+    valueMaxLength: Int? = 30,
     aligned: Bool = true,
   ) -> String {
     guard !isEmpty else { return "[:]" }

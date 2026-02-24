@@ -159,7 +159,7 @@ extension NSXMLSVGParser {
       Parsing element \"\(elementName)\" at \(Date.debug)
       Namespace: \(String(describing: namespaceURI))
       Qualified name: \(String(describing: qName))
-      Attributes: \(attributeDict.prettyPrinted(valueMaxLength: 26))
+      Attributes: \(attributeDict.prettyPrinted())
 
 
       """)

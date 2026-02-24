@@ -46,6 +46,7 @@ struct SVGRootElement: SVGContainerElement {
   /// Function that parses a number string and sets the `containerLayer`'s width
   internal func parseWidth(lengthString: String) {
     if let width = CGFloat(lengthString: lengthString) {
+      print("Setting `SVGRootElement/containerLayer/frame` width to \(width)")
       self.containerLayer.frame.size.width = width
     }
   }
@@ -53,6 +54,7 @@ struct SVGRootElement: SVGContainerElement {
   /// Function that parses a number string and sets the `containerLayer`'s height
   internal func parseHeight(lengthString: String) {
     if let height = CGFloat(lengthString: lengthString) {
+      print("Setting `SVGRootElement/containerLayer/frame` height to \(height)")
       self.containerLayer.frame.size.height = height
     }
   }
@@ -68,7 +70,7 @@ struct SVGRootElement: SVGContainerElement {
       .compactMap { (thisString) -> Double? in
         return Double(thisString.trimWhitespace())
       }
-    print("View box results: \(points). OG string: \(coordinates)")
+//    print("View box results: \(points). OG string: \(coordinates)")
     guard points.count == 4 else {
       return
     }
@@ -85,13 +87,13 @@ extension SVGRootElement: CustomStringConvertible {
   var description: String {
     """
     Element Name: \(Self.elementName)
-    Delayed Attributes: \(delayedAttributes.prettyPrinted(valueMaxLength: 26))
+    Delayed Attributes: \(delayedAttributes.prettyPrinted())
     Supported Attributes: \(supportedAttributes.debugString)
     """
   }
 }
 
-extension SVGAttributes {
+extension Dictionary where Key == String {
   public var debugString: String {
     "\(.indentString + keys.joined(separator: .indentString))"
   }

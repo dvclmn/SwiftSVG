@@ -39,14 +39,11 @@ final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttrib
 
   /// Attributes that are applied after the path has been processed
   internal var delayedAttributes: [String: String] = [:]
-
   internal var asyncParseManager: CanManageAsychronousParsing? = nil
 
   /// Flag that sets whether the path should be parsed asynchronously or not
   internal var shouldParseAsynchronously = true
-
   internal var supportedAttributes: SVGAttributes = [:]
-
   internal var svgLayer = CAShapeLayer()
 
   internal init() {}
@@ -129,8 +126,8 @@ extension SVGPath: CustomStringConvertible {
   var description: String {
     """
     Element Name: \(Self.elementName)
+    Delayed Attributes: \(delayedAttributes.prettyPrinted())
     Parsing Asynchronously? \(shouldParseAsynchronously)
-    Delayed Attributes: \(delayedAttributes.prettyPrinted(valueMaxLength: 26))
     Supported Attributes: \(supportedAttributes.debugString)
     """
   }
