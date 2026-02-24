@@ -74,12 +74,14 @@ struct SVGRootElement: SVGContainerElement {
     guard points.count == 4 else {
       return
     }
-    self.containerLayer.frame = CGRect(
+    let newFrame = CGRect(
       x: points[0],
       y: points[1],
       width: points[2],
       height: points[3]
     )
+    self.containerLayer.frame = newFrame
+    print("New frame ended up being: \(self.containerLayer.frame)")
   }
 }
 

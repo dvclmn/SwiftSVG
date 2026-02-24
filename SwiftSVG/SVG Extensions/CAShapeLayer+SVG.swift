@@ -26,25 +26,19 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
 import UIKit
 #elseif os(OSX)
 import AppKit
 #endif
 
+extension CAShapeLayer {
 
-
-public extension CAShapeLayer {
-    
-    /// Convenience initalizer that synchronously parses a single path string and returns a `CAShapeLayer`
-    /// - Parameter pathString: The path `d` string to parse.
-    convenience init(pathString: String) {
-        self.init()
-        let singlePath = SVGPath(singlePathString: pathString)
-        self.path = singlePath.svgLayer.path
-    }
-    
+  /// Convenience initalizer that synchronously parses a single path string and returns a `CAShapeLayer`
+  /// - Parameter pathString: The path `d` string to parse.
+  public convenience init(pathString: String) {
+    self.init()
+    let singlePath = SVGPath(singlePathString: pathString)
+    self.path = singlePath.svgLayer.path
+  }
 }
-

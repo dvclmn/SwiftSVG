@@ -37,7 +37,8 @@ import AppKit
 /// A set of convenience initializers that create new `UIView` instances from SVG data
 extension UIView {
 
-  /// Convenience initializer that instantiates a new `UIView` instance with a single path `d` string. The path will be parsed synchronously.
+  /// Convenience initializer that instantiates a new `UIView` instance with a
+  /// single path `d` string. The path will be parsed synchronously.
   /// ```
   /// let view = UIView(pathString: "M20 30 L30 10 l10 10")
   /// ```
@@ -58,9 +59,11 @@ extension UIView {
   /// ```
   /// let view = UIView(svgNamed: "hawaiiFlowers")
   /// ```
-  /// - Parameter svgNamed: The name of the SVG resource in the main bundle with an `.svg` extension or the name an asset in the main Asset Catalog as a Data Asset.
+  /// - Parameter svgNamed: The name of the SVG resource in the main bundle with an `.svg`
+  ///   extension or the name an asset in the main Asset Catalog as a Data Asset.
   /// - Parameter parser: The optional parser to use to parse the SVG file
-  /// - Parameter completion: A required completion block to execute once the SVG has completed parsing. The passed `SVGLayer` will be added to this view's sublayers before executing the completion block
+  /// - Parameter completion: A required completion block to execute once the SVG has completed parsing.
+  ///   The passed `SVGLayer` will be added to this view's sublayers before executing the completion block
   public convenience init(svgNamed: String, parser: SVGParser? = nil, completion: SVGResult? = nil) {
 
     // TODO: This is too many guards to really make any sense. Also approaching on the
@@ -108,11 +111,6 @@ extension UIView {
     }
   }
 
-    @available(*, deprecated, renamed: "init(svgNamed:parser:completion:)")
-  public convenience init(SVGNamed: String, parser: SVGParser? = nil, completion: SVGResult? = nil) {
-    self.init(svgNamed: SVGNamed, parser: parser, completion: completion)
-  }
-
   ///Convenience initializer that instantiates a new `UIView` instance for the given SVG file at the given URL
   ///
   /// Upon completion, it will resize the layer to aspect fit this view's superview
@@ -134,11 +132,6 @@ extension UIView {
     }
   }
 
-    @available(*, deprecated, renamed: "init(svgURL:parser:completion:)")
-  public convenience init(SVGURL: URL, parser: SVGParser? = nil, completion: SVGResult? = nil) {
-    self.init(svgURL: SVGURL, parser: parser, completion: completion)
-  }
-
   /// Convenience initializer that instantiates a new `UIView` instance with the given SVG data
   ///
   /// Upon completion, it will resize the layer to aspect fit this view's superview
@@ -147,7 +140,8 @@ extension UIView {
   /// ```
   /// - Parameter svgData: The SVG `Data` to be parsed
   /// - Parameter parser: The optional parser to use to parse the SVG file
-  /// - Parameter completion: A required completion block to execute once the SVG has completed parsing. The passed `SVGLayer` will be added to this view's sublayers before executing the completion block
+  /// - Parameter completion: A required completion block to execute once the SVG has completed parsing.
+  ///   The passed `SVGLayer` will be added to this view's sublayers before executing the completion block
   public convenience init(svgData: Data, parser: SVGParser? = nil, completion: SVGResult? = nil) {
     self.init()
 
@@ -162,14 +156,20 @@ extension UIView {
         case .failure(let error):
           completion?(.failure(error))
       }
-      //            DispatchQueue.main.safeAsync {
-      //                self?.nonOptionalLayer.addSublayer(svgLayer)
-      //            }
-      //            completion?(svgLayer)
     }
   }
 
-    @available(*, deprecated, renamed: "init(svgData:parser:completion:)")
+  @available(*, deprecated, renamed: "init(svgNamed:parser:completion:)")
+  public convenience init(SVGNamed: String, parser: SVGParser? = nil, completion: SVGResult? = nil) {
+    self.init(svgNamed: SVGNamed, parser: parser, completion: completion)
+  }
+
+  @available(*, deprecated, renamed: "init(svgURL:parser:completion:)")
+  public convenience init(SVGURL: URL, parser: SVGParser? = nil, completion: SVGResult? = nil) {
+    self.init(svgURL: SVGURL, parser: parser, completion: completion)
+  }
+
+  @available(*, deprecated, renamed: "init(svgData:parser:completion:)")
   public convenience init(SVGData svgData: Data, parser: SVGParser? = nil, completion: SVGResult? = nil) {
     self.init(svgData: svgData, parser: parser, completion: completion)
   }

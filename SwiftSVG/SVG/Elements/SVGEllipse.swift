@@ -45,9 +45,7 @@ final class SVGEllipse: SVGShapeElement {
 
   /// The ellipse's x radius. Defaults to `CGRect.zero`
   internal var yRadius: CGFloat = 0
-
   internal var svgLayer = CAShapeLayer()
-
   internal var supportedAttributes: SVGAttributes = [:]
 
   /// Function that parses the number string and sets this instance's x radius

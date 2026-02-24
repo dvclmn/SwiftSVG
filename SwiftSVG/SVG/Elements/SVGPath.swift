@@ -48,7 +48,9 @@ final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttrib
 
   internal init() {}
 
-  /// Initializer to to set the `svgLayer`'s cgPath. The path string does not have to be a single path for the whole element, but can include multiple subpaths in the `d` attribute. For instance, the following is a valid path string to pass:
+  /// Initializer to to set the `svgLayer`'s cgPath. The path string does not have to be a single
+  /// path for the whole element, but can include multiple subpaths in the `d` attribute.
+  /// For instance, the following is a valid path string to pass:
   /// ```
   /// <path d="M30 20 L25 15 l10 50z M40 60 l80 10 l 35 55z">
   /// ```
@@ -87,7 +89,10 @@ final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttrib
           guard var this = self else { return }
           this.svgLayer.path = pathDPath.cgPath
           this.applyDelayedAttributes()
-          this.asyncParseManager?.finishedProcessing(this.svgLayer)
+          this.asyncParseManager?.finishedProcessing(
+            this.svgLayer,
+            shouldResizeBounds: false
+          )
         }
 
       } else {

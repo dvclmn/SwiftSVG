@@ -41,7 +41,7 @@ extension SVGLayerType where Self: CALayer {
 
   /// Scales a layer to aspect fit the given size.
   /// - Parameter rect: The `CGRect` to fit into
-  /// - TODO: Should eventually support different content modes
+  // - TODO: Should eventually support different content modes
   @discardableResult
   public func resizeToFit(_ rect: CGRect) -> Self {
 
@@ -50,10 +50,12 @@ extension SVGLayerType where Self: CALayer {
 
     let scaleFactor: CGFloat
     if boundingBoxAspectRatio > viewAspectRatio {
-      // Width is limiting factor
+
+      /// Width is limiting factor
       scaleFactor = rect.width / self.boundingBox.width
     } else {
-      // Height is limiting factor
+
+      /// Height is limiting factor
       scaleFactor = rect.height / self.boundingBox.height
     }
     let scaleTransform = CGAffineTransform(scaleX: scaleFactor, y: scaleFactor)
@@ -66,7 +68,6 @@ extension SVGLayerType where Self: CALayer {
 }
 
 /// A `CAShapeLayer` subclass that allows you to easily work with sublayers and get sizing information
-
 open class SVGLayer: CAShapeLayer, SVGLayerType {
 
   /// The minimum CGRect that fits all subpaths
@@ -74,14 +75,14 @@ open class SVGLayer: CAShapeLayer, SVGLayerType {
 
   /// Corresponds to attribute `viewBox` e.g. `<svg viewBox="0 0 120 80">`
   /// Defines the internal coordinate system for the SVG’s contents
-//  public var viewBox: CGRect?
+  //  public var viewBox: CGRect?
 
   /// Corresponds to `width` and `height` e.g. `<svg width="90" height="30">`
   /// Establishes the viewport size the SVG author intended for rendering/layout.
   ///
   /// Note: Useful only when width/height are resolvable to concrete lengths.
   /// Aka not percentages etc
-//  public var viewportSize: CGSize?
+  //  public var viewportSize: CGSize?
 }
 
 extension SVGLayer {

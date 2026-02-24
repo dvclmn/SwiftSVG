@@ -34,13 +34,18 @@ import AppKit
 
 /// A set of convenience initializers that create new `CALayer` instances from SVG data.
 ///
-/// If you choose to use these initializers, it is assumed that you would like to exercise a higher level of control. As such, you must provide a completion block and then add the passed `SVGLayer` to the layer of your choosing. Use the UIView extensions if you prefer the easier to use one-liner initializers.
+/// If you choose to use these initializers, it is assumed that you would like to exercise a
+/// higher level of control. As such, you must provide a completion block and then add the
+/// passed `SVGLayer` to the layer of your choosing. Use the UIView extensions if you
+/// prefer the easier to use one-liner initializers.
 extension CALayer {
 
-  /// Convenience initializer that creates a new `CALayer` from a local or remote URL. You must provide a completion block and add the passed `SVGLayer to a sublayer`.
+  /// Convenience initializer that creates a new `CALayer` from a local or remote URL.
+  /// You must provide a completion block and add the passed `SVGLayer to a sublayer`.
   /// - Parameter svgURL: The local or remote `URL` of the SVG resource
   /// - Parameter parser: The optional parser to use to parse the SVG file
-  /// - Parameter completion: A required completion block to execute once the SVG has completed parsing. You must add the passed `SVGLayer` to a sublayer to display it.
+  /// - Parameter completion: A required completion block to execute once the SVG
+  ///   has completed parsing. You must add the passed `SVGLayer` to a sublayer to display it.
   @discardableResult
   public convenience init(svgURL: URL, parser: SVGParser? = nil, completion: @escaping SVGResult) {
     do {
@@ -51,16 +56,12 @@ extension CALayer {
     }
   }
 
-    @available(*, deprecated, renamed: "init(svgURL:parser:completion:)")
-  @discardableResult
-  public convenience init(SVGURL: URL, parser: SVGParser? = nil, completion: @escaping SVGResult) {
-    self.init(svgURL: SVGURL, parser: parser, completion: completion)
-  }
-
-  /// Convenience initializer that creates a new `CALayer` from SVG data. You must provide a completion block and add the passed `SVGLayer to a sublayer`.
+  /// Convenience initializer that creates a new `CALayer` from SVG data.
+  /// You must provide a completion block and add the passed `SVGLayer to a sublayer`.
   /// - Parameter svgData: The SVG `Data` to be parsed
   /// - Parameter parser: The optional parser to use to parse the SVG file
-  /// - Parameter completion: A required completion block to execute once the SVG has completed parsing. You must add the passed `SVGLayer` to a sublayer to display it.
+  /// - Parameter completion: A required completion block to execute once the SVG has
+  ///   completed parsing. You must add the passed `SVGLayer` to a sublayer to display it.
   @discardableResult
   public convenience init(
     svgData: Data,
@@ -79,7 +80,10 @@ extension CALayer {
     }
 
     /// If nothing cached, set up new parse
-    let dispatchQueue = DispatchQueue(label: "com.straussmade.swiftsvg", attributes: .concurrent)
+    let dispatchQueue = DispatchQueue(
+      label: "com.straussmade.swiftsvg",
+      attributes: .concurrent
+    )
 
     dispatchQueue.async { [weak self] in
 
@@ -101,14 +105,22 @@ extension CALayer {
             }
           }
           completion(result)
-
         }
       }
       parserToUse.startParsing()
     }
   }
+}
 
-    @available(*, deprecated, renamed: "init(svgData:parser:completion:)")
+// MARK: - Deprecations
+extension CALayer {
+  @available(*, deprecated, renamed: "init(svgURL:parser:completion:)")
+  @discardableResult
+  public convenience init(SVGURL: URL, parser: SVGParser? = nil, completion: @escaping SVGResult) {
+    self.init(svgURL: SVGURL, parser: parser, completion: completion)
+  }
+
+  @available(*, deprecated, renamed: "init(svgData:parser:completion:)")
   @discardableResult
   public convenience init(SVGData: Data, parser: SVGParser? = nil, completion: @escaping SVGResult) {
     self.init()

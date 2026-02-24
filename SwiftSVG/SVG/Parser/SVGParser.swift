@@ -32,14 +32,6 @@ import UIKit
 import AppKit
 #endif
 
-/*
-struct SVGParseOptions: OptionSet {
-    let rawValue: Int
-
-    static let shouldParseAsynchronously = SVGParseOptions(rawValue: 1 << 0)
-}
- */
-
 public typealias SVGResult = (Result<SVGLayer, Error>) -> Void
 
 /// A protocol describing an XML parser capable of parsing SVG data

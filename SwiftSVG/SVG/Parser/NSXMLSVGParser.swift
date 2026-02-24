@@ -44,9 +44,9 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     case invalidURL
   }
 
-  fileprivate var asyncParseCount: Int = 0
-  fileprivate var didDispatchAllElements = true
-  fileprivate var elementStack = Stack<SVGElement>()
+  package var asyncParseCount: Int = 0
+  package var didDispatchAllElements = true
+  var elementStack = Stack<SVGElement>()
 
   public var completionBlock: SVGResult?
   public var supportedElements: SVGParserSupportedElements? = nil
@@ -65,8 +65,11 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
 
   /// Initializer that can initalize an `NSXMLSVGParser` using SVG `Data`
   /// - parameter svgURL: The URL of the SVG.
-  /// - parameter supportedElements: Optional `SVGParserSupportedElements` struct that restricts the elements and attributes that this parser can parse. If no value is provided, all supported attributes will be used.
-  /// - parameter completion: Optional completion block that will be executed after all elements and attribites have been parsed.
+  /// - parameter supportedElements: Optional `SVGParserSupportedElements`
+  ///   struct that restricts the elements and attributes that this parser can parse. If no value is
+  ///   provided, all supported attributes will be used.
+  /// - parameter completion: Optional completion block that will be executed after all
+  ///   elements and attribites have been parsed.
   public required init(
     svgData: Data,
     supportedElements: SVGParserSupportedElements? = .allSupportedElements,
@@ -77,15 +80,17 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     self.supportedElements = supportedElements
     self.completionBlock = completion
   }
-
 }
 
 extension NSXMLSVGParser {
 
   /// Convenience initializer that can initalize an `NSXMLSVGParser` using a local or remote `URL`
   /// - parameter svgURL: The URL of the SVG.
-  /// - parameter supportedElements: Optional `SVGParserSupportedElements` struct that restrict the elements and attributes that this parser can parse.If no value is provided, all supported attributes will be used.
-  /// - parameter completion: Optional completion block that will be executed after all elements and attribites have been parsed.
+  /// - parameter supportedElements: Optional `SVGParserSupportedElements`
+  ///   struct that restrict the elements and attributes that this parser can parse.If no value is provided,
+  ///   all supported attributes will be used.
+  /// - parameter completion: Optional completion block that will be executed after all
+  ///   elements and attribites have been parsed.
   public convenience init(
     svgURL: URL,
     supportedElements: SVGParserSupportedElements? = nil,
@@ -128,161 +133,6 @@ extension NSXMLSVGParser {
 }
 
 extension NSXMLSVGParser {
-  /// Starts parsing the SVG document
-  public func startParsing() {
-
-    print(
-      """
-      =============================================
-      Parsing SVG  |  \(Date.debug) 
-      ---------------------------------------------
-
-      """)
-    self.asyncCountQueue.sync {
-      self.didDispatchAllElements = false
-    }
-    self.parse()
-  }
-
-  /// The `XMLParserDelegate` method called when the parser has started parsing an SVG element. This implementation will loop through all supported attributes and dispatch the attribute value to the given curried function.
-  open func parser(
-    _ parser: XMLParser,
-    didStartElement elementName: String,
-    namespaceURI: String?,
-    qualifiedName qName: String?,
-    attributes attributeDict: [String: String]
-  ) {
-
-    print(
-      """
-
-      Parsing element \"\(elementName)\" at \(Date.debug)
-      Namespace: \(String(describing: namespaceURI))
-      Qualified name: \(String(describing: qName))
-      Attributes: \(attributeDict.prettyPrinted())
-
-
-      """)
-    guard let elementType = self.supportedElements?.tags[elementName] else {
-      print("\(elementName) is unsupported, skipping.")
-      //      print(
-      //        "\(elementName) is unsupported. For a complete list of supported elements, see the `allSupportedElements` variable in the `SVGParserSupportedElements` struct. Click through on the `elementName` variable name to see the SVG tag name."
-      //      )
-      return
-    }
-
-    let svgElement = elementType()
-
-    if var asyncElement = svgElement as? ParsesAsynchronously {
-      self.asyncCountQueue.sync {
-        self.asyncParseCount += 1
-        asyncElement.asyncParseManager = self
-      }
-    }
-
-    for (attributeName, attributeClosure) in svgElement.supportedAttributes {
-      if let attributeValue = attributeDict[attributeName] {
-        attributeClosure(attributeValue)
-      }
-    }
-
-    print("Adding to Stack:\n\(svgElement)")
-    self.elementStack.push(svgElement)
-  }
-
-  /// The `XMLParserDelegate` method called when the parser has ended parsing an SVG element. This methods pops the last element parsed off the stack and checks if there is an enclosing container layer. Every valid SVG file is guaranteed to have at least one container layer (at a minimum, a `SVGRootElement` instance).
-  ///
-  /// If the parser has finished parsing a `SVGShapeElement`, it will resize the parser's `containerLayer` bounding box to fit all subpaths
-  ///
-  /// If the parser has finished parsing a `<svg>` element, that `SVGRootElement`'s container layer is added to this parser's `containerLayer`.
-  open func parser(
-    _ parser: XMLParser,
-    didEndElement elementName: String,
-    namespaceURI: String?,
-    qualifiedName qName: String?
-  ) {
-
-    guard let last = self.elementStack.last else {
-      return
-    }
-
-    guard elementName == type(of: last).elementName else {
-      return
-    }
-
-    guard let lastElement = self.elementStack.pop() else {
-      return
-    }
-
-    if let rootItem = lastElement as? SVGRootElement {
-      DispatchQueue.main.safeAsync {
-        self.containerLayer.addSublayer(rootItem.containerLayer)
-      }
-      return
-    }
-
-    guard let containerElement = self.elementStack.last as? SVGContainerElement else {
-      return
-    }
-
-    lastElement.didProcessElement(in: containerElement)
-
-    if let lastShapeElement = lastElement as? SVGShapeElement {
-      self.resizeContainerBoundingBox(lastShapeElement.boundingBox)
-    }
-  }
-
-  /// The `XMLParserDelegate` method called when the parser has finished parsing the SVG document. All supported elements and attributes are guaranteed to be dispatched at this point, but there's no guarantee that all elements have finished parsing.
-  ///
-  /// - SeeAlso: `CanManageAsychronousParsing` `finishedProcessing(shapeLayer:)`
-  /// - SeeAlso: `XMLParserDelegate` (`parserDidEndDocument(_:)`)[https://developer.apple.com/documentation/foundation/xmlparserdelegate/1418172-parserdidenddocument]
-  public func parserDidEndDocument(_ parser: XMLParser) {
-
-    print(
-      """
-
-      ---------------------------------------------
-      Parsing Complete   |  \(Date.debug) 
-      Parse Count: \(asyncParseCount)
-      Sublayer count: \(containerLayer.sublayers?.count, default: "nil")
-      =============================================
-      """)
-
-    self.asyncCountQueue.sync {
-      self.didDispatchAllElements = true
-    }
-    if self.asyncParseCount <= 0 {
-      DispatchQueue.main.safeAsync {
-        self.completionBlock?(.success(self.containerLayer))
-        self.completionBlock = nil
-      }
-    }
-  }
-
-  /// The `XMLParserDelegate` method called when the parser has reached a fatal error in parsing. Parsing is stopped if an error is reached and you may want to check that your SVG file passes validation.
-  /// - SeeAlso: `XMLParserDelegate` (`parser(_:parseErrorOccurred:)`)[https://developer.apple.com/documentation/foundation/xmlparserdelegate/1412379-parser]
-  /// - SeeAlso: (SVG Validator)[https://validator.w3.org/]
-  public func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
-    print("Parse Error: \(parseError.localizedDescription)")
-
-    DispatchQueue.main.safeAsync {
-      self.completionBlock?(.failure(parseError))
-      self.completionBlock = nil
-    }
-
-    //    let code = (parseError as NSError).code
-    //    switch code {
-    //      case 76:
-    //        print("Invalid XML: \(SVGParserError.invalidSVG)")
-    //      default:
-    //        print("Some other kind of Error: \(parseError)")
-    //        break
-    //    }
-  }
-
-}
-
-extension NSXMLSVGParser {
 
   /// Method that resizes the container bounding box that fits all the subpaths.
   func resizeContainerBoundingBox(_ boundingBox: CGRect?) {
@@ -293,17 +143,24 @@ extension NSXMLSVGParser {
   }
 }
 
-/// `NSXMLSVGParser` conforms to the protocol `CanManageAsychronousParsing` that uses a simple reference count to see if there are any pending asynchronous tasks that have been dispatched and are still being processed. Once the element has finished processing, the asynchronous elements calls the delegate callback `func finishedProcessing(shapeLayer:)` and the delegate will decrement the count.
+/// `NSXMLSVGParser` conforms to the protocol `CanManageAsychronousParsing` that
+/// uses a simple reference count to see if there are any pending asynchronous tasks that have been
+/// dispatched and are still being processed. Once the element has finished processing, the asynchronous
+/// elements calls the delegate callback `func finishedProcessing(shapeLayer:)`
+/// and the delegate will decrement the count.
 extension NSXMLSVGParser: CanManageAsychronousParsing {
 
-  /// The `CanManageAsychronousParsing` callback called when an `ParsesAsynchronously` element has finished parsing
-  func finishedProcessing(_ shapeLayer: CAShapeLayer) {
+  /// The `CanManageAsychronousParsing` callback called when an
+  /// `ParsesAsynchronously` element has finished parsing
+  func finishedProcessing(_ shapeLayer: CAShapeLayer, shouldResizeBounds: Bool) {
 
     self.asyncCountQueue.sync {
       self.asyncParseCount -= 1
     }
 
-    self.resizeContainerBoundingBox(shapeLayer.path?.boundingBox)
+    if shouldResizeBounds {
+      self.resizeContainerBoundingBox(shapeLayer.path?.boundingBox)
+    }
 
     guard self.asyncParseCount <= 0 && self.didDispatchAllElements else {
       return
