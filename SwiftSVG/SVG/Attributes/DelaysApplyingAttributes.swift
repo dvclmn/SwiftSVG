@@ -34,9 +34,7 @@
     import AppKit
 #endif
 
-/**
- A protocol that describes an instance that will delay processing attributes, usually until in `didProcessElement(in container: SVGContainerElement?)` because either all path information isn't available or when the element needs to apply an attribute to all subelements.
- */
+/// A protocol that describes an instance that will delay processing attributes, usually until in `didProcessElement(in container: SVGContainerElement?)` because either all path information isn't available or when the element needs to apply an attribute to all subelements.
 public protocol DelaysApplyingAttributes {
     
     /**
@@ -47,14 +45,10 @@ public protocol DelaysApplyingAttributes {
     var delayedAttributes: [String : String] { get set }
 }
 
-/**
- An extension that applies any saved and supported attributes
- */
+/// An extension that applies any saved and supported attributes
 extension DelaysApplyingAttributes where Self : SVGElement {
     
-    /**
-     Applies any saved and supported attributes
-     */
+    /// Applies any saved and supported attributes
     public mutating func applyDelayedAttributes() {
         for (attribute, value) in self.delayedAttributes {
             guard let closure = self.supportedAttributes[attribute] else {

@@ -42,23 +42,17 @@
  */
 public protocol Strokable { }
 
-/**
- Line join type that corresponds to the SVG line join string
- */
+/// Line join type that corresponds to the SVG line join string
 enum LineJoin: String {
     case miter, round, bevel
 }
 
-/**
- Line cap type that corresponds to the SVG line cap string
- */
+/// Line cap type that corresponds to the SVG line cap string
 enum LineCap: String {
     case butt, round, square
 }
 
-/**
- Default implementation for stroke attributes on `SVGShapeElement`s
- */
+/// Default implementation for stroke attributes on `SVGShapeElement`s
 extension Strokable where Self : SVGShapeElement {
     
     /**
@@ -128,9 +122,7 @@ extension Strokable where Self : SVGShapeElement {
 }
 
 
-/**
- Default implementation for fill attributes on `SVGGroup`s
- */
+/// Default implementation for fill attributes on `SVGGroup`s
 extension Strokable where Self : SVGGroup {
     
     /**

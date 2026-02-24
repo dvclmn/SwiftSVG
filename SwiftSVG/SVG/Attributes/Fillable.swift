@@ -41,9 +41,7 @@
  */
 public protocol Fillable { }
 
-/**
- Default implementation for fill attributes on `SVGShapeElement`s
- */
+/// Default implementation for fill attributes on `SVGShapeElement`s
 extension Fillable where Self : SVGShapeElement {
     
     /**
@@ -86,9 +84,7 @@ extension Fillable where Self : SVGShapeElement {
         self.svgLayer.fillRule = CAShapeLayerFillRule.evenOdd
     }
     
-    /**
-     Sets the fill opacity of the underlying `SVGLayer` through its CGColor, not the CALayer's opacity property. This value will override any opacity value passed in with the `fill-color` attribute.
-     */
+    /// Sets the fill opacity of the underlying `SVGLayer` through its CGColor, not the CALayer's opacity property. This value will override any opacity value passed in with the `fill-color` attribute.
     func fillOpacity(opacity: String) {
         guard let opacity = CGFloat(opacity) else {
             return
@@ -102,9 +98,7 @@ extension Fillable where Self : SVGShapeElement {
 }
 
 
-/**
- Default implementation for fill attributes on `SVGGroup`s
- */
+/// Default implementation for fill attributes on `SVGGroup`s
 extension Fillable where Self : SVGGroup {
     
     ///The curried functions to be used for the `SVGGroup`'s default implementation. This dictionary is meant to be used in the `SVGParserSupportedElements` instance
@@ -118,9 +112,7 @@ extension Fillable where Self : SVGGroup {
         ]
     }
     
-    /**
-     Sets the fill color for all subelements of the `SVGGroup`
-     */
+    /// Sets the fill color for all subelements of the `SVGGroup`
     func fill(_ fillColor: String) {
         self.delayedAttributes["fill"] = fillColor
     }
@@ -133,9 +125,7 @@ extension Fillable where Self : SVGGroup {
         self.delayedAttributes["fill-rule"] = fillRule
     }
     
-    /**
-     Sets the fill opacity for all subelements of the `SVGGroup` through its CGColor, not the CALayer's opacity property.
-     */
+    /// Sets the fill opacity for all subelements of the `SVGGroup` through its CGColor, not the CALayer's opacity property.
     func fillOpacity(_ opacity: String) {
         self.delayedAttributes["opacity"] = opacity
     }
