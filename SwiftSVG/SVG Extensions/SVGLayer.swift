@@ -26,49 +26,45 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
-    import UIKit
+import UIKit
 #elseif os(OSX)
-    import AppKit
+import AppKit
 #endif
 
-/**
- A protocol that describes an instance that can store bounding box information
- */
+/// A protocol that describes an instance that can store bounding box information
 public protocol SVGLayerType {
-    var boundingBox: CGRect { get }
+  var boundingBox: CGRect { get }
 }
 
-public extension SVGLayerType where Self: CALayer {
+extension SVGLayerType where Self: CALayer {
 
-    /**
-     Scales a layer to aspect fit the given size.
-     - Parameter rect: The `CGRect` to fit into
-     - TODO: Should eventually support different content modes
-     */
-    @discardableResult
-    func resizeToFit(_ rect: CGRect) -> Self {
-        
-        let boundingBoxAspectRatio = self.boundingBox.width / self.boundingBox.height
-        let viewAspectRatio = rect.width / rect.height
-        
-        let scaleFactor: CGFloat
-        if (boundingBoxAspectRatio > viewAspectRatio) {
-            // Width is limiting factor
-            scaleFactor = rect.width / self.boundingBox.width
-        } else {
-            // Height is limiting factor
-            scaleFactor = rect.height / self.boundingBox.height
-        }
-        let scaleTransform = CGAffineTransform(scaleX: scaleFactor, y: scaleFactor)
-        
-        DispatchQueue.main.safeAsync {
-            self.setAffineTransform(scaleTransform)
-        }
-        return self
+  /**
+   Scales a layer to aspect fit the given size.
+   - Parameter rect: The `CGRect` to fit into
+   - TODO: Should eventually support different content modes
+   */
+  @discardableResult
+  public func resizeToFit(_ rect: CGRect) -> Self {
+
+    let boundingBoxAspectRatio = self.boundingBox.width / self.boundingBox.height
+    let viewAspectRatio = rect.width / rect.height
+
+    let scaleFactor: CGFloat
+    if boundingBoxAspectRatio > viewAspectRatio {
+      // Width is limiting factor
+      scaleFactor = rect.width / self.boundingBox.width
+    } else {
+      // Height is limiting factor
+      scaleFactor = rect.height / self.boundingBox.height
     }
+    let scaleTransform = CGAffineTransform(scaleX: scaleFactor, y: scaleFactor)
+
+    DispatchQueue.main.safeAsync {
+      self.setAffineTransform(scaleTransform)
+    }
+    return self
+  }
 }
 
 /**
@@ -76,67 +72,74 @@ public extension SVGLayerType where Self: CALayer {
  */
 
 open class SVGLayer: CAShapeLayer, SVGLayerType {
-    
-    /// The minimum CGRect that fits all subpaths
-    public var boundingBox = CGRect.null    
+
+  /// The minimum CGRect that fits all subpaths
+  public var boundingBox = CGRect.null
+
+  /// Defines the internal coordinate system for the SVG’s contents
+  public var viewBox: CGRect?
+
+  /// Establishes the viewport size the SVG author intended for rendering/layout.
+  /// Useful only when width/height are resolvable to concrete lengths.
+  /// Aka not percentages etc
+  public var documentSize: CGSize?
 }
 
-public extension SVGLayer {
-    
-    /**
-     Returns a copy of the given SVGLayer
-     */
-    var svgLayerCopy: SVGLayer? {
-        do {
-            let data = try NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
-            if let copiedLayer = try NSKeyedUnarchiver.unarchivedObject(ofClass: SVGLayer.self, from: data) {
-                copiedLayer.boundingBox = self.boundingBox
-                return copiedLayer
-            }
-            return nil
-        } catch {
-            #if DEBUG
-            print("SVGLayer copy failed to archive/unarchive: \(error)")
-            #endif
-            return nil
-        }
+extension SVGLayer {
+
+  /**
+   Returns a copy of the given SVGLayer
+   */
+  public var svgLayerCopy: SVGLayer? {
+    do {
+      let data = try NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
+      if let copiedLayer = try NSKeyedUnarchiver.unarchivedObject(ofClass: SVGLayer.self, from: data) {
+        copiedLayer.boundingBox = self.boundingBox
+        return copiedLayer
+      }
+      return nil
+    } catch {
+      #if DEBUG
+      print("SVGLayer copy failed to archive/unarchive: \(error)")
+      #endif
+      return nil
     }
+  }
 }
 
 // MARK: - Fill Overrides
 
 extension SVGLayer {
-    
-    /// Applies the given fill color to all sublayers
-    override open var fillColor: CGColor? {
-        didSet {
-            self.applyOnSublayers(ofType: CAShapeLayer.self) { (thisShapeLayer) in
-                thisShapeLayer.fillColor = fillColor
-            }
-        }
+
+  /// Applies the given fill color to all sublayers
+  override open var fillColor: CGColor? {
+    didSet {
+      self.applyOnSublayers(ofType: CAShapeLayer.self) { (thisShapeLayer) in
+        thisShapeLayer.fillColor = fillColor
+      }
     }
+  }
 }
 
 // MARK: - Stroke Overrides
 
 extension SVGLayer {
-    
-    /// Applies the given line width to all `CAShapeLayer`s
-    override open var lineWidth: CGFloat {
-        didSet {
-            self.applyOnSublayers(ofType: CAShapeLayer.self) { (thisShapeLayer) in
-                thisShapeLayer.lineWidth = lineWidth
-            }
-        }
-    }
-    
-    /// Applies the given stroke color to all `CAShapeLayer`s
-    override open var strokeColor: CGColor? {
-        didSet {
-            self.applyOnSublayers(ofType: CAShapeLayer.self) { (thisShapeLayer) in
-                thisShapeLayer.strokeColor = strokeColor
-            }
-        }
-    }
-}
 
+  /// Applies the given line width to all `CAShapeLayer`s
+  override open var lineWidth: CGFloat {
+    didSet {
+      self.applyOnSublayers(ofType: CAShapeLayer.self) { (thisShapeLayer) in
+        thisShapeLayer.lineWidth = lineWidth
+      }
+    }
+  }
+
+  /// Applies the given stroke color to all `CAShapeLayer`s
+  override open var strokeColor: CGColor? {
+    didSet {
+      self.applyOnSublayers(ofType: CAShapeLayer.self) { (thisShapeLayer) in
+        thisShapeLayer.strokeColor = strokeColor
+      }
+    }
+  }
+}

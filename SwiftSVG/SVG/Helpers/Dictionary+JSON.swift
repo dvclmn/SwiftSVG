@@ -30,18 +30,21 @@ import Foundation
 
 extension Dictionary where Key: Decodable, Value: Decodable {
 
-  init?(jsonFile name: String?) {
+  init(jsonFile name: String?) throws {
     print("Attempting to load json file of CSS named colours. File name: \(name, default: "Not provided")")
-    guard let jsonPath = Bundle(for: NSXMLSVGParser.self).url(forResource: name, withExtension: "json") else {
-      return nil
+    
+    guard let jsonPath = Bundle.module.url(forResource: "cssColorNames", withExtension: "json") else {
+//    guard let jsonPath = Bundle(for: NSXMLSVGParser.self).url(forResource: name, withExtension: "json") else {
+      throw NamedColorsError.jsonResourceNotFound
     }
-    guard let jsonData = try? Data(contentsOf: jsonPath) else {
-      return nil
-    }
-    guard let asDictionary = try? JSONDecoder().decode([Key: Value].self, from: jsonData) else {
-      return nil
-    }
+    
+    let jsonData = try Data(contentsOf: jsonPath)
+    let asDictionary = try JSONDecoder().decode([Key: Value].self, from: jsonData)
     self = asDictionary
   }
 
+}
+
+enum NamedColorsError: Error {
+  case jsonResourceNotFound
 }
