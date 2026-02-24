@@ -40,9 +40,7 @@ final class SVGRectangle: SVGShapeElement {
 
   /// The CGRect for the rectangle
   internal var rectangleRect = CGRect()
-
   internal var svgLayer = CAShapeLayer()
-
   internal var supportedAttributes: SVGAttributes = [:]
 
   /// The x radius of the corner oval. Defaults to `0`

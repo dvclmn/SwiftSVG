@@ -93,8 +93,3 @@ extension SVGRootElement: CustomStringConvertible {
   }
 }
 
-extension Dictionary where Key == String {
-  public var debugString: String {
-    "\(.indentString + keys.joined(separator: .indentString))"
-  }
-}

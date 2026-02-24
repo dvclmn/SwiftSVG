@@ -37,9 +37,7 @@ import AppKit
 struct SVGPolygon: SVGShapeElement {
 
   internal static let elementName = "polygon"
-
   internal var supportedAttributes: SVGAttributes = [:]
-
   internal var svgLayer = CAShapeLayer()
 
   /// Function that parses a coordinate string and creates a polygon path

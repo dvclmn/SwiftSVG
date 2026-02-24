@@ -34,7 +34,6 @@ extension Dictionary where Key: Decodable, Value: Decodable {
     print("Attempting to load json file of CSS named colours. File name: \(name, default: "Not provided")")
 
     guard let jsonPath = Bundle.module.url(forResource: "cssColorNames", withExtension: "json") else {
-      //    guard let jsonPath = Bundle(for: NSXMLSVGParser.self).url(forResource: name, withExtension: "json") else {
       throw NamedColorsError.jsonResourceNotFound
     }
 

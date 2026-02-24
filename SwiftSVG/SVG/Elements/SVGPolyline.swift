@@ -37,9 +37,7 @@ import AppKit
 struct SVGPolyline: SVGShapeElement {
 
   internal static let elementName = "polyline"
-
   internal var supportedAttributes: SVGAttributes = [:]
-
   internal var svgLayer = CAShapeLayer()
 
   /// Parses a coordinate string and creates a new polyline based on them
