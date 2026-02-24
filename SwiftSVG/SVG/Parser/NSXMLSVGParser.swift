@@ -241,21 +241,21 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
    - SeeAlso: (SVG Validator)[https://validator.w3.org/]
    */
   public func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
-    print("Parse Error: \(parseError)")
+//    print("Parse Error: \(parseError)")
     
     DispatchQueue.main.safeAsync {
       self.completionBlock?(.failure(parseError))
       self.completionBlock = nil
     }
     
-    let code = (parseError as NSError).code
-    switch code {
-      case 76:
-        print("Invalid XML: \(SVGParserError.invalidSVG)")
-      default:
-        print("Some other kind of Error: \(parseError)")
-        break
-    }
+//    let code = (parseError as NSError).code
+//    switch code {
+//      case 76:
+//        print("Invalid XML: \(SVGParserError.invalidSVG)")
+//      default:
+//        print("Some other kind of Error: \(parseError)")
+//        break
+//    }
   }
 
 }

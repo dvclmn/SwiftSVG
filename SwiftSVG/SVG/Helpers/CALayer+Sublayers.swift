@@ -26,44 +26,39 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
-
 #if os(iOS) || os(tvOS)
-    import UIKit
+import UIKit
 #elseif os(OSX)
-    import AppKit
+import AppKit
 #endif
 
-
-/**
- Helper functions that make it easier to find and work with sublayers
- */
+/// Helper functions that make it easier to find and work with sublayers
 extension CALayer {
-    
-    /**
-     Helper function that applies the given closure on all sublayers of a given type
-     */
-    open func applyOnSublayers<T: CALayer>(ofType: T.Type, closure: (T) -> ()) {
-        _ = self.sublayers(in: self).map(closure)
+
+  /**
+   Helper function that applies the given closure on all sublayers of a given type
+   */
+  public func applyOnSublayers<T: CALayer>(ofType: T.Type, closure: (T) -> Void) {
+    _ = self.sublayers(in: self).map(closure)
+  }
+
+  /**
+   Helper function that returns an array of all sublayers of a given type
+   */
+  public func sublayers<T: CALayer, U>(in layer: T) -> [U] {
+
+    var sublayers: [U] = []
+
+    guard let allSublayers = layer.sublayers else {
+      return sublayers
     }
 
-    /**
-     Helper function that returns an array of all sublayers of a given type
-     */
-    public func sublayers<T: CALayer, U>(in layer: T) -> [U] {
-        
-        var sublayers = [U]()
-        
-        guard let allSublayers = layer.sublayers else {
-            return sublayers
-        }
-        
-        for thisSublayer in allSublayers {
-            sublayers += self.sublayers(in: thisSublayer)
-            if let thisSublayer = thisSublayer as? U {
-                sublayers.append(thisSublayer)
-            }
-        }
-        return sublayers
+    for thisSublayer in allSublayers {
+      sublayers += self.sublayers(in: thisSublayer)
+      if let thisSublayer = thisSublayer as? U {
+        sublayers.append(thisSublayer)
+      }
     }
+    return sublayers
+  }
 }
