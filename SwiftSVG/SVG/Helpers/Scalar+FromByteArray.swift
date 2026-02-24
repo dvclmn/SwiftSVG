@@ -34,9 +34,7 @@ import CoreGraphics
 
 extension CGFloat {
     
-    /**
-     Initializer that creates a new CGFloat from a String
-     */
+    /// Initializer that creates a new CGFloat from a String
     internal init?(_ string: String) {
         guard let asDouble = Double(string) else {
             return nil
@@ -44,9 +42,7 @@ extension CGFloat {
         self.init(asDouble)
     }
     
-    /**
-     Initializer that creates a new CGFloat from a Character byte array with the option to set the base.
-     */
+    /// Initializer that creates a new CGFloat from a Character byte array with the option to set the base.
     internal init?(byteArray: [CChar], base: Int32 = 10) {
         var nullTerminated = byteArray
         nullTerminated.append(0)
@@ -58,9 +54,7 @@ extension CGFloat {
 
 extension Float {
     
-    /**
-     Initializer that creates a new Float from a Character byte array
-     */
+    /// Initializer that creates a new Float from a Character byte array
     internal init?(byteArray: [CChar]) {
         
         guard byteArray.count > 0 else {
@@ -80,9 +74,7 @@ extension Float {
 
 extension Double {
     
-    /**
-     Initializer that creates a new Double from a Character byte array
-     */
+    /// Initializer that creates a new Double from a Character byte array
     internal init?(byteArray: [CChar]) {
         
         guard byteArray.count > 0 else {

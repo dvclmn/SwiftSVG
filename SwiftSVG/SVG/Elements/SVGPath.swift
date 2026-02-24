@@ -34,25 +34,19 @@
     import AppKit
 #endif
 
-/**
- Concrete implementation that creates a `CAShapeLayer` from a `<path>` element and its attributes
- */
+/// Concrete implementation that creates a `CAShapeLayer` from a `<path>` element and its attributes
 final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttributes {
     
     /// :nodoc:
     internal static let elementName = "path"
     
-    /**
-     Attributes that are applied after the path has been processed
-     */
+    /// Attributes that are applied after the path has been processed
     internal var delayedAttributes = [String : String]()
     
     /// :nodoc:
     internal var asyncParseManager: CanManageAsychronousParsing? = nil
     
-    /**
-     Flag that sets whether the path should be parsed asynchronously or not
-     */
+    /// Flag that sets whether the path should be parsed asynchronously or not
     internal var shouldParseAsynchronously = true
     
     /// :nodoc:
@@ -76,9 +70,7 @@ final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttrib
         self.parseD(singlePathString)
     }
     
-    /**
-     Function that takes a `d` path string attribute and sets the `svgLayer`'s `cgPath`
-     */
+    /// Function that takes a `d` path string attribute and sets the `svgLayer`'s `cgPath`
     internal func parseD(_ pathString: String) {
         let workingString = pathString.trimWhitespace()
         assert(workingString.hasPrefix("M") || workingString.hasPrefix("m"), "Path d attribute must begin with MoveTo Command (\"M\")")
@@ -114,9 +106,7 @@ final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttrib
         }
     }
     
-    /**
-     The clip rule for this path to be applied after the path has been parsed
-     */
+    /// The clip rule for this path to be applied after the path has been parsed
     internal func clipRule(_ clipRule: String) {
         guard let thisPath = self.svgLayer.path else {
             self.delayedAttributes["clip-rule"] = clipRule

@@ -36,9 +36,7 @@ import AppKit
 #endif
 
 
-/**
- A set of convenience initializers that create new `UIView` instances from SVG data
- */
+/// A set of convenience initializers that create new `UIView` instances from SVG data
 public extension UIView {
     
     /**

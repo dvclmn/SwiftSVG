@@ -31,14 +31,10 @@
 import CoreGraphics
 import Foundation
 
-/**
- A struct that conforms to the `Sequence` protocol that takes a coordinate string and continuously returns`CGPoint`s
- */
+/// A struct that conforms to the `Sequence` protocol that takes a coordinate string and continuously returns`CGPoint`s
 internal struct CoordinateLexer: IteratorProtocol, Sequence {
     
-    /**
-     Generates a `CGPoint`
-     */
+    /// Generates a `CGPoint`
     typealias Element = CGPoint
     
     /// :nodoc:
@@ -58,24 +54,18 @@ internal struct CoordinateLexer: IteratorProtocol, Sequence {
     /// :nodoc:
     private var numberArray = [CChar]()
     
-    /**
-     Creates a new `CoordinateLexer` from a comma or space separated number string
-     */
+    /// Creates a new `CoordinateLexer` from a comma or space separated number string
     internal init(coordinateString: String) {
         self.coordinateString = coordinateString.trimWhitespace()
         self.workingString = self.coordinateString.utf8CString
     }
     
-    /**
-     Required by Swift's `IteratorProtocol` that returns a new `CoordinateLexer`
-     */
+    /// Required by Swift's `IteratorProtocol` that returns a new `CoordinateLexer`
     internal func makeIterator() -> CoordinateLexer {
         return CoordinateLexer(coordinateString: self.coordinateString)
     }
     
-    /**
-     Required by Swift's `IteratorProtocol` that returns the next `CGPoint` or nil if it's at the end of the sequence
-     */
+    /// Required by Swift's `IteratorProtocol` that returns the next `CGPoint` or nil if it's at the end of the sequence
     internal mutating func next() -> Element? {
         
         var didParseX = false

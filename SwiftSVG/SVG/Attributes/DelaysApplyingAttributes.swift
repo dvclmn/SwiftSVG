@@ -37,11 +37,9 @@
 /// A protocol that describes an instance that will delay processing attributes, usually until in `didProcessElement(in container: SVGContainerElement?)` because either all path information isn't available or when the element needs to apply an attribute to all subelements.
 public protocol DelaysApplyingAttributes {
     
-    /**
-     The attributes to apply to all sublayers after all subelements have been processed.
-     - parameter Key: The name of an element's attribute such as `d`, `fill`, and `rx`.
-     - parameter Value: The string value of the attribute passed from the parser, such as `"#ff00ee"`
-     */
+    /// The attributes to apply to all sublayers after all subelements have been processed.
+    /// - parameter Key: The name of an element's attribute such as `d`, `fill`, and `rx`.
+    /// - parameter Value: The string value of the attribute passed from the parser, such as `"#ff00ee"`
     var delayedAttributes: [String : String] { get set }
 }
 

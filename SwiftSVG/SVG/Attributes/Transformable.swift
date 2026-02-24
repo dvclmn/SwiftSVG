@@ -36,9 +36,7 @@
 
 
 
-/**
- A struct that represents a single transformation that can then be combined with other `Transform`s 
- */
+/// A struct that represents a single transformation that can then be combined with other `Transform`s 
 struct Transform {
     
     let affineTransform: CGAffineTransform
@@ -122,18 +120,14 @@ private struct TransformableConstants {
     static let attributesRegex = "(\\w+)\\(((\\-?\\d+\\.?\\d*e?\\-?\\d*\\s*,?\\s*)+)\\)"
 }
 
-/**
- A protocol that describes an instance that can be transformed via an SVG element's `transform` attribute. Currently, `matrix`, `rotate`, `scale`, `skewX`, and `skewY` are supported. A default implementation is supplied for `SVGContainerElement`s that sets the `affineTransform` of the container layer itself, not on all of its subelements.
- */
+/// A protocol that describes an instance that can be transformed via an SVG element's `transform` attribute. Currently, `matrix`, `rotate`, `scale`, `skewX`, and `skewY` are supported. A default implementation is supplied for `SVGContainerElement`s that sets the `affineTransform` of the container layer itself, not on all of its subelements.
 public protocol Transformable {
     var layerToTransform: CALayer { get }
 }
 
 extension Transformable where Self : SVGContainerElement {
     
-    /**
-     Default implementation for a `SVGContainerElement` that transforms the `containerLayer`
-     */
+    /// Default implementation for a `SVGContainerElement` that transforms the `containerLayer`
     var layerToTransform: CALayer {
         return self.containerLayer
     }
@@ -141,9 +135,7 @@ extension Transformable where Self : SVGContainerElement {
 
 extension Transformable where Self : SVGShapeElement {
     
-    /**
-     Default implementation for a `SVGShapeElement` that transforms the `svgLayer`
-     */
+    /// Default implementation for a `SVGShapeElement` that transforms the `svgLayer`
     var layerToTransform: CALayer {
         return self.svgLayer
     }
@@ -177,9 +169,7 @@ extension Transformable where Self : SVGGroup {
 
 extension Transformable {
     
-    /**
-     Parses and applies the SVG transform string to this `SVGElement`'s `SVGLayer`. Can parse multiple transforms separated by spaces
-     */
+    /// Parses and applies the SVG transform string to this `SVGElement`'s `SVGLayer`. Can parse multiple transforms separated by spaces
     func transform(_ transformString: String) {
         
         do {

@@ -35,23 +35,17 @@
 #endif
 
 
-/**
- Concrete implementation that creates a `CAShapeLayer` from a `<circle>` element and its attributes
- */
+/// Concrete implementation that creates a `CAShapeLayer` from a `<circle>` element and its attributes
 
 final class SVGCircle: SVGShapeElement {
     
     /// :nodoc:
     internal static let elementName = "circle"
     
-    /**
-     The circle's center point. Defaults to `CGRect.zero`
-     */
+    /// The circle's center point. Defaults to `CGRect.zero`
     internal var circleCenter = CGPoint.zero
     
-    /**
-     The circle's radius. Defaults to `0`
-     */
+    /// The circle's radius. Defaults to `0`
     internal var circleRadius: CGFloat = 0
     
     /// :nodoc:
@@ -60,9 +54,7 @@ final class SVGCircle: SVGShapeElement {
     /// :nodoc:
     internal var supportedAttributes: [String : (String) -> ()] = [:]
     
-    /**
-     Function that parses the number string and sets this instance's radius
-     */
+    /// Function that parses the number string and sets this instance's radius
     internal func radius(r: String) {
         guard let r = CGFloat(lengthString: r) else {
             return
@@ -70,9 +62,7 @@ final class SVGCircle: SVGShapeElement {
         self.circleRadius = r
     }
     
-    /**
-     Function that parses the number string and sets this instance's x center
-     */
+    /// Function that parses the number string and sets this instance's x center
     internal func xCenter(x: String) {
         guard let x = CGFloat(lengthString: x) else {
             return
@@ -80,9 +70,7 @@ final class SVGCircle: SVGShapeElement {
         self.circleCenter.x = x
     }
     
-    /**
-     Function that parses the number string and sets this instance's y center
-     */
+    /// Function that parses the number string and sets this instance's y center
     internal func yCenter(y: String) {
         guard let y = CGFloat(lengthString: y) else {
             return
@@ -90,9 +78,7 @@ final class SVGCircle: SVGShapeElement {
         self.circleCenter.y = y
     }
     
-    /**
-     Function that is called after the circle's center and radius have been parsed and set. This function creates the path and sets the internal `SVGLayer`'s path.
-     */
+    /// Function that is called after the circle's center and radius have been parsed and set. This function creates the path and sets the internal `SVGLayer`'s path.
     internal func didProcessElement(in container: SVGContainerElement?) {
         guard let container = container else {
             return

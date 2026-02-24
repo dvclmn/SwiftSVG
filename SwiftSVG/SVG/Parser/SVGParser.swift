@@ -46,9 +46,7 @@ struct SVGParseOptions: OptionSet {
 
 public typealias SVGResult = (Result<SVGLayer, Error>) -> Void
 
-/**
- A protocol describing an XML parser capable of parsing SVG data
- */
+/// A protocol describing an XML parser capable of parsing SVG data
 public protocol SVGParser {
     
     /**

@@ -35,14 +35,10 @@
 #endif
 
 
-/**
- A struct that maps `<path>` d commands to `SVGElement`s
- */
+/// A struct that maps `<path>` d commands to `SVGElement`s
 internal struct PathDConstants {
     
-    /**
-     Valid path letters that can be used in the path d string
-     */
+    /// Valid path letters that can be used in the path d string
     enum DCharacter: CChar {
         case A = 65
         case a = 97
@@ -70,9 +66,7 @@ internal struct PathDConstants {
         case point = 46
     }
     
-    /**
-     A dictionary that generates a new `PathCommand` based on the `CChar` value of the SVG path letter
-     */
+    /// A dictionary that generates a new `PathCommand` based on the `CChar` value of the SVG path letter
     static let characterDictionary: [CChar : PathCommand] = [
         DCharacter.M.rawValue: MoveTo(pathType: .absolute),
         DCharacter.m.rawValue: MoveTo(pathType: .relative),
@@ -96,14 +90,10 @@ internal struct PathDConstants {
     
 }
 
-/**
- A struct that conforms to the `Sequence` protocol that takes a `<path>` `d` string and returns `SVGElement` instances
- */
+/// A struct that conforms to the `Sequence` protocol that takes a `<path>` `d` string and returns `SVGElement` instances
 internal struct PathDLexer: IteratorProtocol, Sequence {
     
-    /**
-     Generates a `PathCommand`
-     */
+    /// Generates a `PathCommand`
     typealias Element = PathCommand
     
     /// :nodoc:
@@ -126,24 +116,18 @@ internal struct PathDLexer: IteratorProtocol, Sequence {
     /// :nodoc:
     private let workingString: ContiguousArray<CChar>
     
-    /**
-     Initializer for creating a new `PathDLexer` from a path d string
-     */
+    /// Initializer for creating a new `PathDLexer` from a path d string
     internal init(pathString: String) {
         self.pathString = pathString
         self.workingString = self.pathString.utf8CString
     }
     
-    /**
-     Required by Swift's `IteratorProtocol` that returns a new `PathDLexer`
-     */
+    /// Required by Swift's `IteratorProtocol` that returns a new `PathDLexer`
     internal func makeIterator() -> PathDLexer {
         return PathDLexer(pathString: self.pathString)
     }
     
-    /**
-     Required by Swift's `IteratorProtocol` that returns the next `PathCommand` or nil if it's at the end of the sequence
-     */
+    /// Required by Swift's `IteratorProtocol` that returns the next `PathCommand` or nil if it's at the end of the sequence
     internal mutating func next() -> Element? {
         
         self.currentCommand?.clearBuffer()
@@ -200,9 +184,7 @@ internal struct PathDLexer: IteratorProtocol, Sequence {
         return nil
     }
     
-    /**
-     Adds a valid `Double` to the current `PathCommand` if possible
-     */
+    /// Adds a valid `Double` to the current `PathCommand` if possible
     private mutating func pushCoordinateIfPossible(_ byteArray: [CChar]) {
         if byteArray.count == 0 {
             return

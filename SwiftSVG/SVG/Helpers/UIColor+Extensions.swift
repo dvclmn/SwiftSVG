@@ -151,17 +151,13 @@ extension UIColor {
     self.init(red: colorArray[0], green: colorArray[1], blue: colorArray[2], alpha: colorArray[3])
   }
 
-  /**
-   Convenience initializer that creates a new UIColor from a integer functional, taking the form `rgb(rrr, ggg, bbb)`
-   */
+  /// Convenience initializer that creates a new UIColor from a integer functional, taking the form `rgb(rrr, ggg, bbb)`
   internal convenience init(rgbString: String) {
     let valuesString = rgbString.dropFirst(4).dropLast()
     self.init(colorValuesString: valuesString)
   }
 
-  /**
-   Convenience initializer that creates a new UIColor from an integer functional, taking the form `rgba(rrr, ggg, bbb, <alphavalue>)`
-   */
+  /// Convenience initializer that creates a new UIColor from an integer functional, taking the form `rgba(rrr, ggg, bbb, <alphavalue>)`
   internal convenience init(rgbaString: String) {
     let valuesString = rgbaString.dropFirst(5).dropLast()
     self.init(colorValuesString: valuesString)

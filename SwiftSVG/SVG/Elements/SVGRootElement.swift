@@ -34,9 +34,7 @@
     import AppKit
 #endif
 
-/**
- Concrete implementation that creates a container from a `<svg>` element and its attributes. This will almost always be the root container element that will container all other `SVGElement` layers
- */
+/// Concrete implementation that creates a container from a `<svg>` element and its attributes. This will almost always be the root container element that will container all other `SVGElement` layers
 
 struct SVGRootElement: SVGContainerElement {
     
@@ -52,18 +50,14 @@ struct SVGRootElement: SVGContainerElement {
     // :nodoc:
     internal var supportedAttributes = [String : (String) -> ()]()
     
-    /**
-     Function that parses a number string and sets the `containerLayer`'s width
-     */
+    /// Function that parses a number string and sets the `containerLayer`'s width
     internal func parseWidth(lengthString: String) {
         if let width = CGFloat(lengthString: lengthString) {
             self.containerLayer.frame.size.width = width
         }
     }
     
-    /**
-     Function that parses a number string and sets the `containerLayer`'s height
-     */
+    /// Function that parses a number string and sets the `containerLayer`'s height
     internal func parseHeight(lengthString: String) {
         if let height = CGFloat(lengthString: lengthString) {
             self.containerLayer.frame.size.height = height

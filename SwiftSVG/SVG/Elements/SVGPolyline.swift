@@ -34,9 +34,7 @@
     import AppKit
 #endif
 
-/**
- Concrete implementation that creates a `CAShapeLayer` from a `<polyline>` element and its attributes
- */
+/// Concrete implementation that creates a `CAShapeLayer` from a `<polyline>` element and its attributes
 
 struct SVGPolyline: SVGShapeElement {
     
@@ -49,9 +47,7 @@ struct SVGPolyline: SVGShapeElement {
     /// :nodoc:
     internal var svgLayer = CAShapeLayer()
     
-    /**
-     Parses a coordinate string and creates a new polyline based on them
-     */
+    /// Parses a coordinate string and creates a new polyline based on them
     internal func points(points: String) {
         let polylinePath = UIBezierPath()
         for (index, thisPoint) in CoordinateLexer(coordinateString: points).enumerated() {

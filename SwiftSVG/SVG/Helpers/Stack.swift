@@ -31,9 +31,7 @@
 
 import Foundation
 
-/**
- A protocol that describes an instance that can act as a stack data structure
- */
+/// A protocol that describes an instance that can act as a stack data structure
 protocol StackType {
     associatedtype StackItem
     var items: [StackItem] { get set }
@@ -42,9 +40,7 @@ protocol StackType {
     mutating func push(_ itemToPush: StackItem)
 }
 
-/**
- A stack data structure
- */
+/// A stack data structure
 internal struct Stack<T>: StackType {
     var items = [T]()
     init() { }
@@ -52,9 +48,7 @@ internal struct Stack<T>: StackType {
 
 extension StackType {
     
-    /**
-     Default implementation of popping the last element off the stack
-     */
+    /// Default implementation of popping the last element off the stack
     @discardableResult
     mutating func pop() -> StackItem? {
         guard self.items.count > 0 else {
@@ -63,32 +57,24 @@ extension StackType {
         return self.items.removeLast()
     }
     
-    /**
-     Push a new element on to the stack
-     */
+    /// Push a new element on to the stack
     mutating func push(_ itemToPush: StackItem) {
         self.items.append(itemToPush)
     }
     
-    /**
-     Clear all elements from the stack
-     */
+    /// Clear all elements from the stack
     mutating func clear() {
         self.items.removeAll()
     }
     
-    /**
-     Returns the number of elements on the stack
-     */
+    /// Returns the number of elements on the stack
     var count: Int {
         get {
             return self.items.count
         }
     }
     
-    /**
-     Check whether the stack is empty or not
-     */
+    /// Check whether the stack is empty or not
     var isEmpty: Bool {
         get {
             if self.items.count == 0 {
@@ -98,9 +84,7 @@ extension StackType {
         }
     }
     
-    /**
-     Return the last element on the stack without popping it off the stack. Equivalent to peek in other stack implementations 
-     */
+    /// Return the last element on the stack without popping it off the stack. Equivalent to peek in other stack implementations 
     var last: StackItem? {
         get {
             if self.isEmpty == false {

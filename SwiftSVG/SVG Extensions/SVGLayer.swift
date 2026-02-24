@@ -67,9 +67,7 @@ extension SVGLayerType where Self: CALayer {
   }
 }
 
-/**
- A `CAShapeLayer` subclass that allows you to easily work with sublayers and get sizing information
- */
+/// A `CAShapeLayer` subclass that allows you to easily work with sublayers and get sizing information
 
 open class SVGLayer: CAShapeLayer, SVGLayerType {
 
@@ -87,9 +85,7 @@ open class SVGLayer: CAShapeLayer, SVGLayerType {
 
 extension SVGLayer {
 
-  /**
-   Returns a copy of the given SVGLayer
-   */
+  /// Returns a copy of the given SVGLayer
   public var svgLayerCopy: SVGLayer? {
     do {
       let data = try NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)

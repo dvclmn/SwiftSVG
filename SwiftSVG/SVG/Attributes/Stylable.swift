@@ -35,9 +35,7 @@ private struct StylableConstants {
     static let attributesRegex = "(((\\w+)-?(\\w*)?):?([ #\\w]*\\.?\\w+))"
 }
 
-/**
- A protocol that describes instances whose attributes that can be set vis a css style string. A default implementation is supplied that parses the style string and applies the attributes using the `SVGelement`'s `supportedAttributes`.
- */
+/// A protocol that describes instances whose attributes that can be set vis a css style string. A default implementation is supplied that parses the style string and applies the attributes using the `SVGelement`'s `supportedAttributes`.
 public protocol Stylable { }
 
 extension Stylable where Self : SVGElement {
@@ -66,14 +64,10 @@ extension Stylable where Self : SVGGroup {
   }
 }
 
-/**
- Default implementation for the style attribute on `SVGElement`s
- */
+/// Default implementation for the style attribute on `SVGElement`s
 extension Stylable where Self : SVGElement {
     
-    /**
-     Parses and applies the css-style `style` string to this `SVGElement`'s `SVGLayer`
-     */
+    /// Parses and applies the css-style `style` string to this `SVGElement`'s `SVGLayer`
     func style(_ styleString: String) {
         
         do {

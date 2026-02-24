@@ -34,9 +34,7 @@
     import AppKit
 #endif
 
-/**
- Convenience initializer that can parse a single path string and returns a `UIBezierPath`
- */
+/// Convenience initializer that can parse a single path string and returns a `UIBezierPath`
 
 public extension UIBezierPath {
     

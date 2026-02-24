@@ -35,23 +35,17 @@
 #endif
 
 
-/**
- Concrete implementation that creates a `CAShapeLayer` from a `<line>` element and its attributes
- */
+/// Concrete implementation that creates a `CAShapeLayer` from a `<line>` element and its attributes
 
 final class SVGLine: SVGShapeElement {
     
     /// :nodoc:
     internal static let elementName = "line"
     
-    /**
-     The line's end point. Defaults to `CGPoint.zero`
-     */
+    /// The line's end point. Defaults to `CGPoint.zero`
     internal var end = CGPoint.zero
     
-    /**
-     The line's end point. Defaults to `CGPoint.zero`
-     */
+    /// The line's end point. Defaults to `CGPoint.zero`
     internal var start = CGPoint.zero
     
     /// :nodoc:
@@ -60,9 +54,7 @@ final class SVGLine: SVGShapeElement {
     /// :nodoc:
     internal var supportedAttributes: [String : (String) -> ()] = [:]
     
-    /**
-     Function parses a number string and sets this line's start `x`
-     */
+    /// Function parses a number string and sets this line's start `x`
     internal func x1(x1: String) {
         guard let x1 = CGFloat(x1) else {
             return
@@ -70,9 +62,7 @@ final class SVGLine: SVGShapeElement {
         self.start.x = x1
     }
     
-    /**
-     Function parses a number string and sets this line's end `x`
-     */
+    /// Function parses a number string and sets this line's end `x`
     internal func x2(x2: String) {
         guard let x2 = CGFloat(x2) else {
             return
@@ -80,9 +70,7 @@ final class SVGLine: SVGShapeElement {
         self.end.x = x2
     }
     
-    /**
-     Function parses a number string and sets this line's start `y`
-     */
+    /// Function parses a number string and sets this line's start `y`
     internal func y1(y1: String) {
         guard let y1 = CGFloat(y1) else {
             return
@@ -90,9 +78,7 @@ final class SVGLine: SVGShapeElement {
         self.start.y = y1
     }
     
-    /**
-     Function parses a number string and sets this line's end `y`
-     */
+    /// Function parses a number string and sets this line's end `y`
     internal func y2(y2: String) {
         guard let y2 = CGFloat(y2) else {
             return
@@ -100,9 +86,7 @@ final class SVGLine: SVGShapeElement {
         self.end.y = y2
     }
     
-    /**
-     Draws a line from the `startPoint` to the `endPoint`
-     */
+    /// Draws a line from the `startPoint` to the `endPoint`
     internal func didProcessElement(in container: SVGContainerElement?) {
         guard let container = container else {
             return

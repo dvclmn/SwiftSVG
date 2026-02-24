@@ -34,9 +34,7 @@
     import AppKit
 #endif
 
-/**
- Concrete implementation that creates a `CAShapeLayer` from a `<polygon>` element and its attributes
- */
+/// Concrete implementation that creates a `CAShapeLayer` from a `<polygon>` element and its attributes
 
 struct SVGPolygon: SVGShapeElement {
     
@@ -49,9 +47,7 @@ struct SVGPolygon: SVGShapeElement {
     /// :nodoc:
     internal var svgLayer = CAShapeLayer()
     
-    /**
-     Function that parses a coordinate string and creates a polygon path
-     */
+    /// Function that parses a coordinate string and creates a polygon path
     internal func points(points: String) {
         let polylinePath = UIBezierPath()
         for (index, thisPoint) in CoordinateLexer(coordinateString: points).enumerated() {

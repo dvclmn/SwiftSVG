@@ -35,15 +35,11 @@ import AppKit
 /// `NSXMLSVGParser` conforms to `SVGParser`
 extension NSXMLSVGParser: SVGParser {}
 
-/**
- Concrete implementation of `SVGParser` that uses Foundation's `XMLParser` to parse a given SVG file.
- */
+/// Concrete implementation of `SVGParser` that uses Foundation's `XMLParser` to parse a given SVG file.
 
 open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
 
-  /**
-   Error type used when a fatal error has occured
-   */
+  /// Error type used when a fatal error has occured
   enum SVGParserError {
     case invalidSVG
     case invalidURL
@@ -131,9 +127,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     self.init(svgData: SVGData, supportedElements: supportedElements, completion: completion)
   }
 
-  /**
-   Starts parsing the SVG document
-   */
+  /// Starts parsing the SVG document
   public func startParsing() {
     self.asyncCountQueue.sync {
       self.didDispatchAllElements = false
@@ -141,9 +135,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     self.parse()
   }
 
-  /**
-   The `XMLParserDelegate` method called when the parser has started parsing an SVG element. This implementation will loop through all supported attributes and dispatch the attribiute value to the given curried function.
-   */
+  /// The `XMLParserDelegate` method called when the parser has started parsing an SVG element. This implementation will loop through all supported attributes and dispatch the attribiute value to the given curried function.
   open func parser(
     _ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?,
     qualifiedName qName: String?, attributes attributeDict: [String: String]
@@ -262,9 +254,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
 
 extension NSXMLSVGParser {
 
-  /**
-   Method that resizes the container bounding box that fits all the subpaths.
-   */
+  /// Method that resizes the container bounding box that fits all the subpaths.
   func resizeContainerBoundingBox(_ boundingBox: CGRect?) {
     guard let thisBoundingBox = boundingBox else {
       return
@@ -276,9 +266,7 @@ extension NSXMLSVGParser {
 /// `NSXMLSVGParser` conforms to the protocol `CanManageAsychronousParsing` that uses a simple reference count to see if there are any pending asynchronous tasks that have been dispatched and are still being processed. Once the element has finished processing, the asynchronous elements calls the delegate callback `func finishedProcessing(shapeLayer:)` and the delegate will decrement the count.
 extension NSXMLSVGParser: CanManageAsychronousParsing {
 
-  /**
-   The `CanManageAsychronousParsing` callback called when an `ParsesAsynchronously` element has finished parsing
-   */
+  /// The `CanManageAsychronousParsing` callback called when an `ParsesAsynchronously` element has finished parsing
   func finishedProcessing(_ shapeLayer: CAShapeLayer) {
 
     self.asyncCountQueue.sync {

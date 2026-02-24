@@ -30,14 +30,10 @@
 
 import Foundation
 
-/**
- A struct that lists all the supported elements and attributes for a parser
- */
+/// A struct that lists all the supported elements and attributes for a parser
 public struct SVGParserSupportedElements {
     
-    /**
-     Typealias that serves as a placeholder for a closure that returns a new `SVGElement` instance
-     */
+    /// Typealias that serves as a placeholder for a closure that returns a new `SVGElement` instance
     public typealias ElementGenerator = () -> SVGElement
     
     /**
@@ -55,9 +51,7 @@ public struct SVGParserSupportedElements {
         self.tags = tags
     }
     
-    /**
-     A configuration that will only parse `<path>` elements and the `d` and `fill attributes`. Use this configuration if you know you will only be parsing `<path>` elements with fill colors
-     */
+    /// A configuration that will only parse `<path>` elements and the `d` and `fill attributes`. Use this configuration if you know you will only be parsing `<path>` elements with fill colors
     public static var barebones: SVGParserSupportedElements {
         
         let supportedElements: [String : ElementGenerator] = [
@@ -76,9 +70,7 @@ public struct SVGParserSupportedElements {
         return SVGParserSupportedElements(tags: supportedElements)
     }
     
-    /**
-     A configuration that is the full set of elements and attributes that SwiftSVG supports. This is the default configuration for the `NSXMLSVGParser`.
-     */
+    /// A configuration that is the full set of elements and attributes that SwiftSVG supports. This is the default configuration for the `NSXMLSVGParser`.
     public static var allSupportedElements: SVGParserSupportedElements {
         let supportedElements: [String : ElementGenerator] = [
             SVGCircle.elementName: {
