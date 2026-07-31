@@ -91,7 +91,7 @@ final class SVGPath: SVGShapeElement, ParsesAsynchronously, DelaysApplyingAttrib
           this.applyDelayedAttributes()
           this.asyncParseManager?.finishedProcessing(
             this.svgLayer,
-            shouldResizeBounds: false
+            shouldResizeBounds: true
           )
         }
 

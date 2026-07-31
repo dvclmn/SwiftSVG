@@ -139,6 +139,7 @@ extension NSXMLSVGParser {
     guard let thisBoundingBox = boundingBox else {
       return
     }
+    print("Resizing container bounding box, from \(self.containerLayer.boundingBox) to \(thisBoundingBox)")
     self.containerLayer.boundingBox = self.containerLayer.boundingBox.union(thisBoundingBox)
   }
 }
@@ -166,6 +167,9 @@ extension NSXMLSVGParser: CanManageAsychronousParsing {
       return
     }
     DispatchQueue.main.safeAsync {
+      print(
+        "Ran `finishedProcessing`, sending `containerLayer` as result. \(self.containerLayer.name, default: "no name")"
+      )
       self.completionBlock?(.success(self.containerLayer))
       self.completionBlock = nil
     }

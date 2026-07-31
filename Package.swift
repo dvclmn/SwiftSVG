@@ -17,7 +17,6 @@ let package = Package(
       dependencies: [],
       path: "SwiftSVG",
       resources: [.process("Resources/cssColorNames.json")],
-//      resources: [.process("Resources/cssColorNames.json")],
     ),
     .testTarget(
       name: "SwiftSVGTests",
