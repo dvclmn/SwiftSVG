@@ -78,7 +78,7 @@ extension NSXMLSVGParser {
   open func parser(
     _ parser: XMLParser,
     didStartMappingPrefix prefix: String,
-    toURI namespaceURI: String
+    toURI namespaceURI: String,
   ) {
     self.namespaceURIStackByPrefix[prefix, default: []].append(namespaceURI)
   }
@@ -86,7 +86,7 @@ extension NSXMLSVGParser {
   /// The `XMLParserDelegate` callback that reports a namespace declaration leaving scope.
   open func parser(
     _ parser: XMLParser,
-    didEndMappingPrefix prefix: String
+    didEndMappingPrefix prefix: String,
   ) {
     guard var namespaceURIs = self.namespaceURIStackByPrefix[prefix] else {
       return
@@ -156,7 +156,7 @@ extension NSXMLSVGParser {
       let rootAttributes = SVGRootAttributes(
         attributes: attributeDict,
         elementNamespaceURI: namespaceURI,
-        xlinkNamespaceURI: self.currentNamespaceURI(matching: Self.xlinkNamespaceURI)
+        xlinkNamespaceURI: self.currentNamespaceURI(matching: Self.xlinkNamespaceURI),
       )
       rootElement.apply(rootAttributes)
       if self.elementStack.isEmpty {
@@ -245,7 +245,9 @@ extension NSXMLSVGParser {
       Parse Count: \(asyncParseCount)
       Root layer parsed: \(rootLayer != nil)
       =============================================
-      """)
+      
+      """
+    )
 
     self.asyncCountQueue.sync {
       self.didDispatchAllElements = true
@@ -257,7 +259,7 @@ extension NSXMLSVGParser {
     }
 
     guard self.rootLayer != nil else {
-      self.completeParsing(with: .failure(.missingRootSVGElement))
+      self.completeParsing(with: .failure(SVGParserError.missingRootSVGElement))
       return
     }
 
@@ -284,13 +286,13 @@ extension NSXMLSVGParser {
     guard isReady else { return }
 
     guard let rootLayer = self.rootLayer, let namespaceMode = self.namespaceMode else {
-      self.completeParsing(with: .failure(.missingRootSVGElement))
+      self.completeParsing(with: .failure(SVGParserError.missingRootSVGElement))
       return
     }
 
     let report = SVGParseReport(
       namespaceMode: namespaceMode,
-      diagnostics: self.parseDiagnostics
+      diagnostics: self.parseDiagnostics,
     )
     let completion = self.completionBlock
     let resultCompletion = self.resultCompletionBlock
@@ -323,7 +325,7 @@ extension NSXMLSVGParser {
           }
           let report = SVGParseReport(
             namespaceMode: namespaceMode,
-            diagnostics: self.parseDiagnostics
+            diagnostics: self.parseDiagnostics,
           )
           resultCompletion?(.success(SVGParseResult(layer: layer, report: report)))
         case .failure(let error):
