@@ -20,9 +20,46 @@ extension NSXMLSVGParser {
       """)
     self.asyncCountQueue.sync {
       self.didDispatchAllElements = false
+      self.asyncParseCount = 0
     }
     self.namespaceURIStackByPrefix.removeAll()
+    self.elementStack.clear()
+    self.rootLayer = nil
+    self.namespaceMode = nil
+    self.parseDiagnostics.removeAll()
+    self.didSeeDocumentRootElement = false
+    self.parserFailure = nil
     self.parse()
+  }
+
+  /// Records how this document identifies its root SVG element.
+  func establishNamespaceMode(elementName: String, namespaceURI: String?) {
+    guard elementName == SVGRootElement.elementName else {
+      self.parserFailure = .invalidRootElement(name: elementName, namespaceURI: namespaceURI)
+      return
+    }
+
+    switch namespaceURI {
+      case Self.svgNamespaceURI:
+        self.namespaceMode = .svg
+      case nil:
+        self.namespaceMode = .unnamespacedCompatibility
+        self.parseDiagnostics.append(.missingSVGNamespace)
+      default:
+        self.parserFailure = .invalidRootElement(name: elementName, namespaceURI: namespaceURI)
+    }
+  }
+
+  /// Whether an element's resolved namespace belongs to the current document's admitted SVG mode.
+  func shouldProcessElement(namespaceURI: String?) -> Bool {
+    switch self.namespaceMode {
+      case .svg:
+        namespaceURI == Self.svgNamespaceURI
+      case .unnamespacedCompatibility:
+        namespaceURI == nil
+      case nil:
+        false
+    }
   }
 
   /// Returns the namespace URI currently bound to a prefix.
@@ -82,15 +119,24 @@ extension NSXMLSVGParser {
     print(
       """
       Parsing element <\(qName ?? elementName)> at \(Date.debug)
-      Namespace: \(String(describing: namespaceURI))
-      Qualified name: \(String(describing: qName))
+      Namespace: \(namespaceURI, default: "nil")
+      Qualified name: \(qName, default: "nil")
       Attributes: \(attributeDict.prettyPrinted())
 
 
       """)
-    guard namespaceURI == Self.svgNamespaceURI else {
+    if !self.didSeeDocumentRootElement {
+      self.didSeeDocumentRootElement = true
+      self.establishNamespaceMode(elementName: elementName, namespaceURI: namespaceURI)
+    }
+
+    guard self.parserFailure == nil else {
+      return
+    }
+
+    guard self.shouldProcessElement(namespaceURI: namespaceURI) else {
       print(
-        "Skipping element \(qName ?? elementName) outside the SVG namespace: "
+        "Skipping element \(qName ?? elementName) outside the admitted SVG namespace: "
           + "\(String(describing: namespaceURI))"
       )
       return
@@ -151,7 +197,7 @@ extension NSXMLSVGParser {
     qualifiedName qName: String?,
   ) {
 
-    guard namespaceURI == Self.svgNamespaceURI else {
+    guard self.parserFailure == nil, self.shouldProcessElement(namespaceURI: namespaceURI) else {
       return
     }
 
@@ -204,6 +250,17 @@ extension NSXMLSVGParser {
     self.asyncCountQueue.sync {
       self.didDispatchAllElements = true
     }
+
+    if let parserFailure = self.parserFailure {
+      self.completeParsing(with: .failure(parserFailure))
+      return
+    }
+
+    guard self.rootLayer != nil else {
+      self.completeParsing(with: .failure(.missingRootSVGElement))
+      return
+    }
+
     self.completeParsingIfReady()
   }
 
@@ -214,18 +271,7 @@ extension NSXMLSVGParser {
   public func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
     print("Parse Error: \(parseError.localizedDescription)")
 
-    let code = (parseError as NSError).code
-    switch code {
-      case 76:
-        print("Invalid XML: \(SVGParserError.invalidSVG)")
-      default:
-        print("Some other kind of Error: \(parseError)")
-        break
-    }
-    DispatchQueue.main.safeAsync {
-      self.completionBlock?(.failure(parseError))
-      self.completionBlock = nil
-    }
+    self.completeParsing(with: .failure(parseError))
 
   }
 
@@ -237,12 +283,52 @@ extension NSXMLSVGParser {
     }
     guard isReady else { return }
 
+    guard let rootLayer = self.rootLayer, let namespaceMode = self.namespaceMode else {
+      self.completeParsing(with: .failure(.missingRootSVGElement))
+      return
+    }
+
+    let report = SVGParseReport(
+      namespaceMode: namespaceMode,
+      diagnostics: self.parseDiagnostics
+    )
+    let completion = self.completionBlock
+    let resultCompletion = self.resultCompletionBlock
+    self.completionBlock = nil
+    self.resultCompletionBlock = nil
+
     DispatchQueue.main.safeAsync {
-      if let rootLayer = self.rootLayer, rootLayer.superlayer !== self.containerLayer {
+      if rootLayer.superlayer !== self.containerLayer {
         self.containerLayer.addSublayer(rootLayer)
       }
-      self.completionBlock?(.success(self.containerLayer))
-      self.completionBlock = nil
+      completion?(.success(self.containerLayer))
+      resultCompletion?(.success(SVGParseResult(layer: self.containerLayer, report: report)))
+    }
+  }
+
+  /// Delivers a terminal failure to both the established layer-only API and the richer result API.
+  func completeParsing(with result: Result<SVGLayer, Error>) {
+    let completion = self.completionBlock
+    let resultCompletion = self.resultCompletionBlock
+    self.completionBlock = nil
+    self.resultCompletionBlock = nil
+
+    DispatchQueue.main.safeAsync {
+      completion?(result)
+      switch result {
+        case .success(let layer):
+          guard let namespaceMode = self.namespaceMode else {
+            resultCompletion?(.failure(SVGParserError.missingRootSVGElement))
+            return
+          }
+          let report = SVGParseReport(
+            namespaceMode: namespaceMode,
+            diagnostics: self.parseDiagnostics
+          )
+          resultCompletion?(.success(SVGParseResult(layer: layer, report: report)))
+        case .failure(let error):
+          resultCompletion?(.failure(error))
+      }
     }
   }
 

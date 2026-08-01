@@ -174,6 +174,33 @@ parser.startParsing()
 
 The success callback is the lifecycle boundary at which the returned layer hierarchy is fully assembled. Percentage and other context-dependent lengths remain available as `SVGLength` values but do not produce a `viewportSize` until a caller supplies an appropriate layout policy.
 
+### Parse reports
+
+`SVGCompletion` remains the layer-only completion API. Apps that need to distinguish a fully conforming render from a compatibility render can use `SVGParseCompletion` instead. Its successful `SVGParseResult` carries the assembled `SVGLayer` and a typed `SVGParseReport`.
+
+```swift
+let parser = NSXMLSVGParser(
+  svgData: data,
+  resultCompletion: { result in
+    guard case .success(let parsed) = result else { return }
+
+    switch parsed.report.namespaceMode {
+      case .svg:
+        break
+      case .unnamespacedCompatibility:
+        // The layer is renderable, but the document should add the SVG XML namespace.
+        for diagnostic in parsed.report.diagnostics {
+          print(diagnostic.message)
+        }
+    }
+  }
+)
+
+parser.startParsing()
+```
+
+SwiftSVG accepts a namespace-less root `<svg>` only through this compatibility path. It continues to reject a non-SVG root namespace and to ignore child elements outside the admitted document namespace.
+
 Other Interfaces
 ================
 

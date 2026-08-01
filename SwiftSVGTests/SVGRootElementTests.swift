@@ -119,4 +119,54 @@ struct SVGRootElementTests {
     #expect(layer.rootAttributes?.xlinkNamespace == "http://www.w3.org/1999/xlink")
     #expect(layer.sublayers?.count == 1)
   }
+
+  @Test @MainActor
+  func parserReportsNamespaceLessCompatibilityRendering() async throws {
+    let source = """
+      <svg width="400" height="300" viewBox="0 0 400 300">
+        <circle cx="200" cy="150" r="100" />
+        <foreign:circle xmlns:foreign="urn:foreign" cx="200" cy="150" r="50" />
+      </svg>
+      """
+    let parser = NSXMLSVGParser(svgData: Data(source.utf8))
+
+    let result = try await withCheckedThrowingContinuation { continuation in
+      parser.resultCompletionBlock = { result in
+        continuation.resume(with: result)
+      }
+      parser.startParsing()
+    }
+
+    #expect(result.report.namespaceMode == .unnamespacedCompatibility)
+    #expect(result.report.diagnostics == [.missingSVGNamespace])
+    #expect(result.layer.rootAttributes?.namespace == nil)
+    #expect(result.layer.sublayers?.count == 1)
+  }
+
+  @Test @MainActor
+  func parserFailsForANonSVGRootNamespace() async {
+    let source = """
+      <svg xmlns="urn:foreign" viewBox="0 0 400 300">
+        <circle cx="200" cy="150" r="100" />
+      </svg>
+      """
+    let parser = NSXMLSVGParser(svgData: Data(source.utf8))
+
+    let error: Error? = await withCheckedContinuation { continuation in
+      parser.resultCompletionBlock = { result in
+        switch result {
+          case .success:
+            continuation.resume(returning: nil)
+          case .failure(let error):
+            continuation.resume(returning: error)
+        }
+      }
+      parser.startParsing()
+    }
+
+    #expect(
+      (error as? SVGParserError)
+        == .invalidRootElement(name: "svg", namespaceURI: "urn:foreign")
+    )
+  }
 }

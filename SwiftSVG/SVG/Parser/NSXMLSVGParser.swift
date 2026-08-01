@@ -44,22 +44,29 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
   /// The namespace URI traditionally used by SVG's legacy XLink attributes.
   static let xlinkNamespaceURI = "http://www.w3.org/1999/xlink"
 
-  /// Error type used when a fatal error has occured
-  enum SVGParserError {
-    case invalidSVG
-    case invalidURL
-  }
-
   var asyncParseCount: Int = 0
   var didDispatchAllElements = true
   var elementStack = Stack<SVGElement>()
   var rootLayer: CALayer?
+
+  /// The namespace policy selected from the document root.
+  var namespaceMode: SVGNamespaceMode?
+
+  /// Non-fatal conditions discovered while parsing the document.
+  var parseDiagnostics: [SVGParseDiagnostic] = []
+
+  /// Tracks the XML document root independently from the supported-element stack.
+  var didSeeDocumentRootElement = false
+
+  /// A problem discovered during delegate callbacks that should fail once XML parsing ends.
+  var parserFailure: SVGParserError?
 
   /// Namespace mappings currently in scope, stored as stacks so nested declarations can shadow
   /// and then restore an outer declaration with the same prefix.
   var namespaceURIStackByPrefix: [String: [String]] = [:]
 
   public var completionBlock: SVGCompletion?
+  public var resultCompletionBlock: SVGParseCompletion?
   public var supportedElements: SVGParserSupportedElements? = nil
 
   /// The `SVGLayer` that will contain all of the SVG's sublayers
@@ -96,6 +103,16 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
 }
 
 extension NSXMLSVGParser {
+
+  /// Creates a parser whose completion delivers both the assembled layer and its typed parse report.
+  public convenience init(
+    svgData: Data,
+    supportedElements: SVGParserSupportedElements? = .allSupportedElements,
+    resultCompletion: SVGParseCompletion?
+  ) {
+    self.init(svgData: svgData, supportedElements: supportedElements)
+    self.resultCompletionBlock = resultCompletion
+  }
 
   /// Convenience initializer that can initalize an `NSXMLSVGParser` using a local or remote `URL`
   /// - parameter svgURL: The URL of the SVG.

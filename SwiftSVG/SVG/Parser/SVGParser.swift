@@ -38,6 +38,95 @@ public typealias SVGCompletion = (Result<SVGLayer, Error>) -> Void
 @available(*, deprecated, renamed: "SVGCompletion")
 public typealias SVGResult = SVGCompletion
 
+/// The namespace policy used while parsing the SVG document.
+public enum SVGNamespaceMode: Equatable, Sendable {
+  /// The document declared the SVG XML namespace and was parsed as a conforming SVG XML document.
+  case svg
+
+  /// The document omitted the SVG XML namespace and was accepted using SwiftSVG's compatibility path.
+  case unnamespacedCompatibility
+}
+
+/// A non-fatal condition discovered while parsing an SVG document.
+public enum SVGParseDiagnostic: Hashable, Sendable {
+  /// The root `<svg>` element did not declare the SVG XML namespace.
+  case missingSVGNamespace
+
+  /// A short, user-presentable heading for this diagnostic.
+  public var title: String {
+    switch self {
+      case .missingSVGNamespace:
+        "SVG namespace missing"
+    }
+  }
+
+  /// Further context that a host application can present alongside ``title``.
+  public var message: String {
+    switch self {
+      case .missingSVGNamespace:
+        "Rendered in compatibility mode. Add xmlns=\"http://www.w3.org/2000/svg\" to the root <svg> element for SVG XML conformance."
+    }
+  }
+}
+
+/// Typed, non-fatal information produced with a successfully rendered SVG document.
+public struct SVGParseReport: Equatable, Sendable {
+  /// The namespace policy that admitted the document.
+  public let namespaceMode: SVGNamespaceMode
+
+  /// Conditions which did not prevent rendering, but are useful to a host application or editor.
+  public let diagnostics: [SVGParseDiagnostic]
+
+  /// Whether parsing completed with information a host may wish to surface.
+  public var hasDiagnostics: Bool {
+    !self.diagnostics.isEmpty
+  }
+
+  public init(namespaceMode: SVGNamespaceMode, diagnostics: [SVGParseDiagnostic]) {
+    self.namespaceMode = namespaceMode
+    self.diagnostics = diagnostics
+  }
+}
+
+/// The fully assembled renderer layer and its typed parse report.
+public struct SVGParseResult {
+  /// The layer hierarchy that SwiftSVG produced.
+  public let layer: SVGLayer
+
+  /// Information about how that layer hierarchy was produced.
+  public let report: SVGParseReport
+
+  public init(layer: SVGLayer, report: SVGParseReport) {
+    self.layer = layer
+    self.report = report
+  }
+}
+
+/// A callback invoked when SVG parsing completes with both the rendered layer and parse report.
+public typealias SVGParseCompletion = (Result<SVGParseResult, Error>) -> Void
+
+/// An error that prevents SwiftSVG from producing a renderable document.
+public enum SVGParserError: Error, Equatable, LocalizedError, Sendable {
+  /// The XML document's root element was not an SVG root in a supported namespace.
+  case invalidRootElement(name: String, namespaceURI: String?)
+
+  /// The document did not yield a root SVG layer.
+  case missingRootSVGElement
+
+  public var errorDescription: String? {
+    switch self {
+      case .invalidRootElement(let name, let namespaceURI):
+        if let namespaceURI {
+          "Expected an SVG root element, but found <\(name)> in the \(namespaceURI) namespace."
+        } else {
+          "Expected an SVG root element, but found <\(name)> without a namespace."
+        }
+      case .missingRootSVGElement:
+        "The document did not produce an SVG root element."
+    }
+  }
+}
+
 /// A protocol describing an XML parser capable of parsing SVG data
 public protocol SVGParser {
 
