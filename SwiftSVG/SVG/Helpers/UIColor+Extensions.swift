@@ -80,14 +80,13 @@ extension UIColor {
   internal convenience init?(svgString: String) {
     if svgString.hasPrefix("#") {
       self.init(hexString: svgString)
-    }
-
-    if svgString.hasPrefix("rgb") {
-      self.init(rgbString: svgString)
-    }
-
-    if svgString.hasPrefix("rgba") {
+      return
+    } else if svgString.hasPrefix("rgba") {
       self.init(rgbaString: svgString)
+      return
+    } else if svgString.hasPrefix("rgb") {
+      self.init(rgbString: svgString)
+      return
     }
 
     self.init(cssName: svgString)

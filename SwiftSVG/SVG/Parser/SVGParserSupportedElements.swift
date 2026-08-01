@@ -178,11 +178,6 @@ public struct SVGParserSupportedElements {
             },
             SVGRootElement.elementName: {
                 var returnElement = SVGRootElement()
-                returnElement.supportedAttributes = [
-                    "width": returnElement.parseWidth,
-                    "height": returnElement.parseHeight,
-                    "viewBox": returnElement.viewBox
-                ]
                 returnElement.supportedAttributes.add(returnElement.identityAttributes)
                 return returnElement
             }
@@ -192,4 +187,3 @@ public struct SVGParserSupportedElements {
     }
     
 }
-

@@ -7,6 +7,10 @@
 
 import Foundation
 
+#if os(iOS) || os(tvOS)
+import UIKit
+#endif
+
 /// The `PathCommand` that corresponds to the SVG `C` or `c` command
 internal struct CurveTo: PathCommand {
 

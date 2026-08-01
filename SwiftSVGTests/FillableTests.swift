@@ -63,10 +63,10 @@ class FillableTests: XCTestCase {
             XCTFail("Fill opacity should set the fill color")
             return
         }
-        XCTAssert(testShapeElement.svgLayer.fillColor?.components![0] == 0.2, "Expected 0.0, got \(fillComponents[0])")
-        XCTAssert(testShapeElement.svgLayer.fillColor?.components![1] == 1.0, "Expected 0.0, got \(testShapeElement.svgLayer.fillColor!.components![1])")
-        XCTAssert(testShapeElement.svgLayer.fillColor?.components![2] == 0.4, "Expected 0.0, got \(testShapeElement.svgLayer.fillColor!.components![2])")
-        XCTAssert(testShapeElement.svgLayer.fillColor?.components![3] == 0.5, "Expected 0.0, got \(testShapeElement.svgLayer.fillColor!.components![3])")
+        XCTAssertEqual(fillComponents[0], 0.2, accuracy: 0.0001)
+        XCTAssertEqual(fillComponents[1], 1.0, accuracy: 0.0001)
+        XCTAssertEqual(fillComponents[2], 0.4, accuracy: 0.0001)
+        XCTAssertEqual(fillComponents[3], 0.5, accuracy: 0.0001)
     }
     
 }

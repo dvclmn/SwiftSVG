@@ -43,19 +43,19 @@ struct SVGRootElement: SVGContainerElement {
   internal var containerLayer = CALayer()
   internal var supportedAttributes: SVGAttributes = [:]
 
-  /// Function that parses a number string and sets the `containerLayer`'s width
-  internal func parseWidth(lengthString: String) {
-    if let width = CGFloat(lengthString: lengthString) {
-      print("Setting `SVGRootElement/containerLayer/frame` width to \(width)")
-      self.containerLayer.frame.size.width = width
+  /// Applies the renderer's legacy root-layer frame deterministically after all relevant root
+  /// attributes have been parsed into separate values.
+  ///
+  /// A viewBox remains the preferred rendering rectangle for compatibility. Consumers that need
+  /// authored document dimensions should read `SVGLayer.rootAttributes` instead of this frame.
+  internal func apply(_ attributes: SVGRootAttributes) {
+    if let viewBox = attributes.viewBox {
+      self.containerLayer.frame = viewBox
+      return
     }
-  }
 
-  /// Function that parses a number string and sets the `containerLayer`'s height
-  internal func parseHeight(lengthString: String) {
-    if let height = CGFloat(lengthString: lengthString) {
-      print("Setting `SVGRootElement/containerLayer/frame` height to \(height)")
-      self.containerLayer.frame.size.height = height
+    if let viewportSize = attributes.viewportSize {
+      self.containerLayer.frame = CGRect(origin: .zero, size: viewportSize)
     }
   }
 
@@ -63,26 +63,6 @@ struct SVGRootElement: SVGContainerElement {
     return
   }
 
-  internal func viewBox(coordinates: String) {
-    let points =
-      coordinates
-      .components(separatedBy: CharacterSet(charactersIn: ", "))
-      .compactMap { (thisString) -> Double? in
-        return Double(thisString.trimWhitespace())
-      }
-//    print("View box results: \(points). OG string: \(coordinates)")
-    guard points.count == 4 else {
-      return
-    }
-    let newFrame = CGRect(
-      x: points[0],
-      y: points[1],
-      width: points[2],
-      height: points[3]
-    )
-    self.containerLayer.frame = newFrame
-    print("New frame ended up being: \(self.containerLayer.frame)")
-  }
 }
 
 extension SVGRootElement: CustomStringConvertible {
@@ -94,4 +74,3 @@ extension SVGRootElement: CustomStringConvertible {
     """
   }
 }
-

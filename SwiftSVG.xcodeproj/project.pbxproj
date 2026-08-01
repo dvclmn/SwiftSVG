@@ -7,6 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D0C0002A2A00000000000001 /* Print.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AFE31B22EBD6F600BD1672 /* Print.swift */; };
+		D0C000142A00000000000001 /* SVGLength.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000042A00000000000001 /* SVGLength.swift */; };
+		D0C000152A00000000000001 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000052A00000000000001 /* Date.swift */; };
+		D0C000162A00000000000001 /* Curves.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000062A00000000000001 /* Curves.swift */; };
+		D0C000172A00000000000001 /* Lines.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000072A00000000000001 /* Lines.swift */; };
+		D0C000182A00000000000001 /* MoveTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000082A00000000000001 /* MoveTo.swift */; };
+		D0C000192A00000000000001 /* ParseCallbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000092A00000000000001 /* ParseCallbacks.swift */; };
+		D0C000242A00000000000001 /* SVGLength.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000042A00000000000001 /* SVGLength.swift */; };
+		D0C000252A00000000000001 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000052A00000000000001 /* Date.swift */; };
+		D0C000262A00000000000001 /* Curves.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000062A00000000000001 /* Curves.swift */; };
+		D0C000272A00000000000001 /* Lines.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000072A00000000000001 /* Lines.swift */; };
+		D0C000282A00000000000001 /* MoveTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000082A00000000000001 /* MoveTo.swift */; };
+		D0C000292A00000000000001 /* ParseCallbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000092A00000000000001 /* ParseCallbacks.swift */; };
+		D0C000022A00000000000001 /* SVGRootAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000012A00000000000001 /* SVGRootAttributes.swift */; };
+		D0C000032A00000000000001 /* SVGRootAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C000012A00000000000001 /* SVGRootAttributes.swift */; };
 		174FF06D1EF10691003F3DBE /* PathDLexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174FF06C1EF10691003F3DBE /* PathDLexer.swift */; };
 		175093C11E6C669F00EF1853 /* SVGParserSupportedElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175093C01E6C669F00EF1853 /* SVGParserSupportedElements.swift */; };
 		175093C31E6C6C2100EF1853 /* SVGElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175093C21E6C6C2100EF1853 /* SVGElement.swift */; };
@@ -151,6 +166,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D0C000042A00000000000001 /* SVGLength.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Attributes/SVGLength.swift; sourceTree = "<group>"; };
+		D0C000052A00000000000001 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
+		D0C000062A00000000000001 /* Curves.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathCommand/Curves.swift; sourceTree = "<group>"; };
+		D0C000072A00000000000001 /* Lines.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathCommand/Lines.swift; sourceTree = "<group>"; };
+		D0C000082A00000000000001 /* MoveTo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathCommand/MoveTo.swift; sourceTree = "<group>"; };
+		D0C000092A00000000000001 /* ParseCallbacks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseCallbacks.swift; sourceTree = "<group>"; };
+		D0C000012A00000000000001 /* SVGRootAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Attributes/SVGRootAttributes.swift; sourceTree = "<group>"; };
 		174FF06C1EF10691003F3DBE /* PathDLexer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathDLexer.swift; sourceTree = "<group>"; };
 		175093C01E6C669F00EF1853 /* SVGParserSupportedElements.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGParserSupportedElements.swift; sourceTree = "<group>"; };
 		175093C21E6C6C2100EF1853 /* SVGElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SVGElement.swift; path = SVG/Elements/SVGElement.swift; sourceTree = "<group>"; };
@@ -210,7 +232,7 @@
 		381E99A91EF801BB00839918 /* LineToTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineToTests.swift; sourceTree = "<group>"; };
 		381E99AC1EF8946E00839918 /* ScalarFromByteArrayTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScalarFromByteArrayTests.swift; sourceTree = "<group>"; };
 		381E99AE1EF8A55000839918 /* MoveToTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoveToTests.swift; sourceTree = "<group>"; };
-		381E99B01EF8AFE500839918 /* PathCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathCommand.swift; sourceTree = "<group>"; };
+		381E99B01EF8AFE500839918 /* PathCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathCommand/PathCommand.swift; sourceTree = "<group>"; };
 		381E99B31EF8C72900839918 /* CGPathPoints.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGPathPoints.swift; sourceTree = "<group>"; };
 		381E99B51EF8CCCC00839918 /* PathDLexerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathDLexerTests.swift; sourceTree = "<group>"; };
 		381E99B71EF8D26E00839918 /* CurveToTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveToTests.swift; sourceTree = "<group>"; };
@@ -224,7 +246,7 @@
 		387090351F0C134400F72660 /* ParsesAsynchronously.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ParsesAsynchronously.swift; path = ../Elements/ParsesAsynchronously.swift; sourceTree = "<group>"; };
 		38E2A7A21FD33F94003DEFBB /* IndentifiableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndentifiableTests.swift; sourceTree = "<group>"; };
 		38E2A7A51FD34029003DEFBB /* TestShapeElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestShapeElement.swift; sourceTree = "<group>"; };
-		38E2A7A71FD3444B003DEFBB /* simple-rectangle.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "simple-rectangle.svg"; path = "SwiftSVGExamples/simple-rectangle.svg"; sourceTree = "<group>"; };
+		38E2A7A71FD3444B003DEFBB /* simple-rectangle.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "simple-rectangle.svg"; path = "SwiftSVGExamples/TestSVGs/simple-rectangle.svg"; sourceTree = "<group>"; };
 		39B8D88C1B3C3283009DAF60 /* SwiftSVG.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftSVG.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		39B8D88F1B3C3283009DAF60 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../SwiftSVGFramework/Info.plist; sourceTree = "<group>"; };
 		39B8D8901B3C3283009DAF60 /* SwiftSVGFramework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftSVGFramework.h; sourceTree = "<group>"; };
@@ -234,7 +256,7 @@
 		9E245B6A1AAE383200472F5A /* UIColor+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
 		9E245BDA1AAE3FE000472F5A /* Stack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stack.swift; sourceTree = "<group>"; };
 		A738B2911FD252A9001CF969 /* Identifiable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Identifiable.swift; path = Attributes/Identifiable.swift; sourceTree = "<group>"; };
-		E8235A5E22F260E000E8F1B3 /* cssColorNames.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cssColorNames.json; sourceTree = "<group>"; };
+		E8235A5E22F260E000E8F1B3 /* cssColorNames.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ../../Resources/cssColorNames.json; sourceTree = "<group>"; };
 		E8235A6022F2614000E8F1B3 /* Dictionary+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+JSON.swift"; sourceTree = "<group>"; };
 		E8AFE31B22EBD6F600BD1672 /* Print.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Print.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -337,6 +359,7 @@
 				380210231F3B881E007D236B /* Data+CacheKey.swift */,
 				176BC9BB1EE4AE2700F7B54C /* Dictionary+Add.swift */,
 				E8235A6022F2614000E8F1B3 /* Dictionary+JSON.swift */,
+				D0C000052A00000000000001 /* Date.swift */,
 				380FED781F07F48500EDB255 /* DispatchQueue+Extensions.swift */,
 				380FECF71F000AA000EDB255 /* FloatingPoint+DegreesRadians.swift */,
 				E8AFE31B22EBD6F600BD1672 /* Print.swift */,
@@ -358,6 +381,9 @@
 				176BC9F11EE62AF300F7B54C /* CoordinateLexer.swift */,
 				174FF06C1EF10691003F3DBE /* PathDLexer.swift */,
 				381E99B01EF8AFE500839918 /* PathCommand.swift */,
+				D0C000062A00000000000001 /* Curves.swift */,
+				D0C000072A00000000000001 /* Lines.swift */,
+				D0C000082A00000000000001 /* MoveTo.swift */,
 			);
 			name = Iterators;
 			path = SVG/Iterators;
@@ -370,6 +396,7 @@
 				387090351F0C134400F72660 /* ParsesAsynchronously.swift */,
 				175093C01E6C669F00EF1853 /* SVGParserSupportedElements.swift */,
 				380FED7E1F084FF100EDB255 /* NSXMLSVGParser.swift */,
+				D0C000092A00000000000001 /* ParseCallbacks.swift */,
 			);
 			name = Parser;
 			path = SVG/Parser;
@@ -404,6 +431,8 @@
 				3807CCE91F2866D900E78314 /* DelaysApplyingAttributes.swift */,
 				3807CCEC1F29940A00E78314 /* Fillable.swift */,
 				A738B2911FD252A9001CF969 /* Identifiable.swift */,
+				D0C000042A00000000000001 /* SVGLength.swift */,
+				D0C000012A00000000000001 /* SVGRootAttributes.swift */,
 				3807CCED1F29940A00E78314 /* Strokable.swift */,
 				3807CCEE1F29940A00E78314 /* Stylable.swift */,
 				3807CCEF1F29940A00E78314 /* Transformable.swift */,
@@ -633,6 +662,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0C000032A00000000000001 /* SVGRootAttributes.swift in Sources */,
+				D0C0002A2A00000000000001 /* Print.swift in Sources */,
+				D0C000242A00000000000001 /* SVGLength.swift in Sources */,
+				D0C000252A00000000000001 /* Date.swift in Sources */,
+				D0C000262A00000000000001 /* Curves.swift in Sources */,
+				D0C000272A00000000000001 /* Lines.swift in Sources */,
+				D0C000282A00000000000001 /* MoveTo.swift in Sources */,
+				D0C000292A00000000000001 /* ParseCallbacks.swift in Sources */,
 				38048F2C1F23E28B00179C95 /* StackTests.swift in Sources */,
 				176BC9E71EE51AF600F7B54C /* SVGRectangle.swift in Sources */,
 				38048F2A1F23DDE700179C95 /* SVGRectangleTests.swift in Sources */,
@@ -717,6 +754,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0C000022A00000000000001 /* SVGRootAttributes.swift in Sources */,
+				D0C000142A00000000000001 /* SVGLength.swift in Sources */,
+				D0C000152A00000000000001 /* Date.swift in Sources */,
+				D0C000162A00000000000001 /* Curves.swift in Sources */,
+				D0C000172A00000000000001 /* Lines.swift in Sources */,
+				D0C000182A00000000000001 /* MoveTo.swift in Sources */,
+				D0C000192A00000000000001 /* ParseCallbacks.swift in Sources */,
 				3807CCF11F29940A00E78314 /* Strokable.swift in Sources */,
 				176BC9F41EE62B6100F7B54C /* String+Trim.swift in Sources */,
 				39B8D8A71B3C32DD009DAF60 /* String+Subscript.swift in Sources */,
@@ -792,7 +836,7 @@
 					"$(SDKROOT)",
 				);
 				INFOPLIST_FILE = SwiftSVGTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.SwiftSVGTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -818,7 +862,7 @@
 					"$(SDKROOT)",
 				);
 				INFOPLIST_FILE = SwiftSVGTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.SwiftSVGTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -847,9 +891,9 @@
 				);
 				INFOPLIST_FILE = SwiftSVGFramework/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.straussmade.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -876,9 +920,9 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = SwiftSVGFramework/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.straussmade.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -938,8 +982,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SwiftSVGFramework/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx watchos watchsimulator appletvos appletvsimulator";
@@ -993,8 +1037,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SwiftSVGFramework/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx watchos watchsimulator appletvos appletvsimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";

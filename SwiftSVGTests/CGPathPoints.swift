@@ -27,8 +27,9 @@
 //  THE SOFTWARE.
 
 
-
+#if os(iOS) || os(tvOS)
 import UIKit
+#endif
 
 
 extension CGPath {

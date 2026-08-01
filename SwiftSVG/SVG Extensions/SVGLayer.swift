@@ -73,16 +73,18 @@ open class SVGLayer: CAShapeLayer, SVGLayerType {
   /// The minimum CGRect that fits all subpaths
   public var boundingBox = CGRect.null
 
-  /// Corresponds to attribute `viewBox` e.g. `<svg viewBox="0 0 120 80">`
-  /// Defines the internal coordinate system for the SVG’s contents
-  //  public var viewBox: CGRect?
+  /// Source-authored attributes from the document's root `<svg>` element.
+  public internal(set) var rootAttributes: SVGRootAttributes?
 
-  /// Corresponds to `width` and `height` e.g. `<svg width="90" height="30">`
-  /// Establishes the viewport size the SVG author intended for rendering/layout.
-  ///
-  /// Note: Useful only when width/height are resolvable to concrete lengths.
-  /// Aka not percentages etc
-  //  public var viewportSize: CGSize?
+  /// The SVG user-coordinate rectangle authored in the root `viewBox` attribute.
+  public var viewBox: CGRect? {
+    rootAttributes?.viewBox
+  }
+
+  /// The root `width` and `height` as a concrete size when both values can be resolved locally.
+  public var viewportSize: CGSize? {
+    rootAttributes?.viewportSize
+  }
 }
 
 extension SVGLayer {
@@ -93,6 +95,7 @@ extension SVGLayer {
       let data = try NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
       if let copiedLayer = try NSKeyedUnarchiver.unarchivedObject(ofClass: SVGLayer.self, from: data) {
         copiedLayer.boundingBox = self.boundingBox
+        copiedLayer.rootAttributes = self.rootAttributes
         return copiedLayer
       }
       return nil

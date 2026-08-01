@@ -53,6 +53,14 @@ extension NSXMLSVGParser {
 
     let svgElement = elementType()
 
+    if let rootElement = svgElement as? SVGRootElement {
+      let rootAttributes = SVGRootAttributes(attributes: attributeDict)
+      rootElement.apply(rootAttributes)
+      if self.elementStack.isEmpty {
+        self.containerLayer.rootAttributes = rootAttributes
+      }
+    }
+
     if var asyncElement = svgElement as? ParsesAsynchronously {
       self.asyncCountQueue.sync {
         self.asyncParseCount += 1
@@ -76,7 +84,7 @@ extension NSXMLSVGParser {
   ///
   /// If the parser has finished parsing a `SVGShapeElement`, it will resize the parser's `containerLayer` bounding box to fit all subpaths
   ///
-  /// If the parser has finished parsing a `<svg>` element, that `SVGRootElement`'s container layer is added to this parser's `containerLayer`.
+  /// If the parser has finished parsing a `<svg>` element, that `SVGRootElement`'s container layer is retained for attachment at the successful completion boundary.
   open func parser(
     _ parser: XMLParser,
     didEndElement elementName: String,
@@ -97,9 +105,7 @@ extension NSXMLSVGParser {
     }
 
     if let rootItem = lastElement as? SVGRootElement {
-      DispatchQueue.main.safeAsync {
-        self.containerLayer.addSublayer(rootItem.containerLayer)
-      }
+      self.rootLayer = rootItem.containerLayer
       return
     }
 
@@ -128,19 +134,14 @@ extension NSXMLSVGParser {
       ---------------------------------------------
       Parsing Complete   |  \(Date.debug) 
       Parse Count: \(asyncParseCount)
-      Sublayer count: \(containerLayer.sublayers?.count, default: "nil")
+      Root layer parsed: \(rootLayer != nil)
       =============================================
       """)
 
     self.asyncCountQueue.sync {
       self.didDispatchAllElements = true
     }
-    if self.asyncParseCount <= 0 {
-      DispatchQueue.main.safeAsync {
-        self.completionBlock?(.success(self.containerLayer))
-        self.completionBlock = nil
-      }
-    }
+    self.completeParsingIfReady()
   }
 
   /// The `XMLParserDelegate` method called when the parser has reached a fatal error in parsing.
@@ -163,6 +164,23 @@ extension NSXMLSVGParser {
       self.completionBlock = nil
     }
 
+  }
+
+  /// Delivers a successful parse only after asynchronous elements have finished and the root layer
+  /// has been attached to the public container layer.
+  func completeParsingIfReady() {
+    let isReady = self.asyncCountQueue.sync {
+      self.asyncParseCount <= 0 && self.didDispatchAllElements
+    }
+    guard isReady else { return }
+
+    DispatchQueue.main.safeAsync {
+      if let rootLayer = self.rootLayer, rootLayer.superlayer !== self.containerLayer {
+        self.containerLayer.addSublayer(rootLayer)
+      }
+      self.completionBlock?(.success(self.containerLayer))
+      self.completionBlock = nil
+    }
   }
 
 }

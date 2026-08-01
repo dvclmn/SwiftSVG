@@ -44,7 +44,12 @@ class IndentifiableTests: XCTestCase {
         
         let asData = try! Data(contentsOf: resourceURL)
         let expectation = self.expectation(description: "Identifiable expectation")
-        _ = UIView(svgData: asData) { (svgLayer) in
+        _ = UIView(svgData: asData) { result in
+            guard case .success(let svgLayer) = result else {
+                XCTFail("Expected SVG parsing to succeed")
+                return
+            }
+
             guard let rootLayerName = svgLayer.sublayers?[0].name else {
                 return
             }

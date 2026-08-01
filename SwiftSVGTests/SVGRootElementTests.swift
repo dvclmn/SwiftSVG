@@ -26,22 +26,73 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
+import Foundation
+import Testing
 
+@Suite("SVG root attributes")
+struct SVGRootElementTests {
 
-import XCTest
+  @Test("Root dimensions remain separate from the viewBox")
+  func parsesRootDimensions() {
+    let attributes = SVGRootAttributes(attributes: [
+      "width": "400px",
+      "height": "300",
+      "viewBox": "10, 20 100\t200",
+      "version": "1.1",
+      "xmlns": "http://www.w3.org/2000/svg",
+      "preserveAspectRatio": "xMidYMid meet",
+    ])
 
-class SVGRootElementTests: XCTestCase {
-    
-    func testWidthParse() {
-        let testElement = SVGRootElement()
-        testElement.parseWidth(lengthString: "103px")
-        XCTAssertTrue(testElement.containerLayer.frame.size.width == 103, "Expected width to be 103, got \(testElement.containerLayer.frame.size.width)")
+    #expect(attributes.width == SVGLength(rawValue: "400px"))
+    #expect(attributes.height == SVGLength(rawValue: "300"))
+    #expect(attributes.viewportSize == CGSize(width: 400, height: 300))
+    #expect(attributes.viewBox == CGRect(x: 10, y: 20, width: 100, height: 200))
+    #expect(attributes.version == "1.1")
+    #expect(attributes.namespace == "http://www.w3.org/2000/svg")
+    #expect(attributes.preserveAspectRatio == "xMidYMid meet")
+  }
+
+  @Test(
+    "Only locally resolvable lengths produce a viewport",
+    arguments: ["100%", "12mm", "auto"]
+  )
+  func leavesContextDependentWidthUnresolved(_ width: String) {
+    let attributes = SVGRootAttributes(attributes: [
+      "width": width,
+      "height": "200px",
+    ])
+
+    #expect(attributes.width?.rawValue == width)
+    #expect(attributes.viewportSize == nil)
+  }
+
+  @Test("Malformed viewBox values are not partially accepted")
+  func rejectsMalformedViewBox() {
+    let attributes = SVGRootAttributes(attributes: [
+      "viewBox": "0 0 100 infinity",
+    ])
+
+    #expect(attributes.viewBox == nil)
+  }
+
+  @Test @MainActor
+  func parserPublishesAttributesOnCompletedLayer() async throws {
+    let source = """
+      <svg width="400" height="300" viewBox="10 20 100 200" xmlns="http://www.w3.org/2000/svg">
+      </svg>
+      """
+    let parser = NSXMLSVGParser(svgData: Data(source.utf8))
+
+    let layer = try await withCheckedThrowingContinuation { continuation in
+      parser.completionBlock = { result in
+        continuation.resume(with: result)
+      }
+      parser.startParsing()
     }
-    
-    func testHeightParse() {
-        let testElement = SVGRootElement()
-        testElement.parseHeight(lengthString: "271px")
-        XCTAssertTrue(testElement.containerLayer.frame.size.height == 271, "Expected width to be 271, got \(testElement.containerLayer.frame.size.height)")
-    }
-    
+
+    #expect(layer.viewportSize == CGSize(width: 400, height: 300))
+    #expect(layer.viewBox == CGRect(x: 10, y: 20, width: 100, height: 200))
+    #expect(layer.sublayers?.count == 1)
+    #expect(layer.sublayers?.first?.frame == layer.viewBox)
+  }
 }

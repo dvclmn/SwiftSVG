@@ -7,6 +7,10 @@
 
 import Foundation
 
+#if os(iOS) || os(tvOS)
+import UIKit
+#endif
+
 /// The `PathCommand` that corresponds to the SVG `M` or `m` command
 internal struct MoveTo: PathCommand {
 

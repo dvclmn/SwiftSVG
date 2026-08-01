@@ -32,7 +32,11 @@ import UIKit
 import AppKit
 #endif
 
-public typealias SVGResult = (Result<SVGLayer, Error>) -> Void
+/// A callback invoked when SVG parsing and layer assembly succeeds or fails.
+public typealias SVGCompletion = (Result<SVGLayer, Error>) -> Void
+
+@available(*, deprecated, renamed: "SVGCompletion")
+public typealias SVGResult = SVGCompletion
 
 /// A protocol describing an XML parser capable of parsing SVG data
 public protocol SVGParser {
@@ -42,10 +46,10 @@ public protocol SVGParser {
   ///    - SVGData: SVG file as Data
   ///    - supportedElements: The elements and corresponding attribiutes the parser can parse
   ///    - completion: A closure to execute after the parser has completed parsing and processing the SVG
-  init(svgData: Data, supportedElements: SVGParserSupportedElements?, completion: SVGResult?)
+  init(svgData: Data, supportedElements: SVGParserSupportedElements?, completion: SVGCompletion?)
 
   /// A closure that is executed after all elements have been processed. Should be guaranteed to be executed after all elements have been processed, even if parsing asynchronously.
-  var completionBlock: SVGResult? { get }
+  var completionBlock: SVGCompletion? { get }
 
   /// A struct listing all the elements and its attributes that should be parsed
   var supportedElements: SVGParserSupportedElements? { get }
@@ -54,5 +58,6 @@ public protocol SVGParser {
   var containerLayer: SVGLayer { get }
 
   /// Starts parsing the SVG. Allows you to separate initialization from parse start in case you want to set some things up first.
+  /// A successful `completionBlock` invocation is the boundary at which the returned layer hierarchy is fully assembled.
   func startParsing()
 }

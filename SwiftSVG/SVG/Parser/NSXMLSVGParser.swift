@@ -44,11 +44,12 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     case invalidURL
   }
 
-  package var asyncParseCount: Int = 0
-  package var didDispatchAllElements = true
+  var asyncParseCount: Int = 0
+  var didDispatchAllElements = true
   var elementStack = Stack<SVGElement>()
+  var rootLayer: CALayer?
 
-  public var completionBlock: SVGResult?
+  public var completionBlock: SVGCompletion?
   public var supportedElements: SVGParserSupportedElements? = nil
 
   /// The `SVGLayer` that will contain all of the SVG's sublayers
@@ -73,7 +74,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
   public required init(
     svgData: Data,
     supportedElements: SVGParserSupportedElements? = .allSupportedElements,
-    completion: SVGResult? = nil
+    completion: SVGCompletion? = nil
   ) {
     super.init(data: svgData)
     self.delegate = self
@@ -94,7 +95,7 @@ extension NSXMLSVGParser {
   public convenience init(
     svgURL: URL,
     supportedElements: SVGParserSupportedElements? = nil,
-    completion: SVGResult? = nil
+    completion: SVGCompletion? = nil
   ) {
     do {
       let urlData = try Data(contentsOf: svgURL)
@@ -117,7 +118,7 @@ extension NSXMLSVGParser {
   public convenience init(
     SVGURL: URL,
     supportedElements: SVGParserSupportedElements? = nil,
-    completion: SVGResult? = nil
+    completion: SVGCompletion? = nil
   ) {
     self.init(svgURL: SVGURL, supportedElements: supportedElements, completion: completion)
   }
@@ -126,7 +127,7 @@ extension NSXMLSVGParser {
   public convenience init(
     SVGData: Data,
     supportedElements: SVGParserSupportedElements? = .allSupportedElements,
-    completion: SVGResult? = nil
+    completion: SVGCompletion? = nil
   ) {
     self.init(svgData: SVGData, supportedElements: supportedElements, completion: completion)
   }
@@ -163,16 +164,7 @@ extension NSXMLSVGParser: CanManageAsychronousParsing {
       self.resizeContainerBoundingBox(shapeLayer.path?.boundingBox)
     }
 
-    guard self.asyncParseCount <= 0 && self.didDispatchAllElements else {
-      return
-    }
-    DispatchQueue.main.safeAsync {
-      print(
-        "Ran `finishedProcessing`, sending `containerLayer` as result. \(self.containerLayer.name, default: "no name")"
-      )
-      self.completionBlock?(.success(self.containerLayer))
-      self.completionBlock = nil
-    }
+    self.completeParsingIfReady()
   }
 
 }

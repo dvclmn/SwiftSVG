@@ -152,8 +152,27 @@ SVGLayer
 
 The layer that is passed in the `UIView` and `CALayer` completion blocks is an instance of `SVGLayer` which is a subclass of `CAShapeLayer`. Currently, `SVGLayer` adds the following capabilities:
   - A `boundingBox` property that is the minimum `CGRect` that encloses all subpaths. Good for scaling the layer to fit a view.
+  - `rootAttributes`, `viewBox`, and `viewportSize` properties that preserve the root SVG's source-authored dimensions separately from renderer layer geometry. `viewportSize` resolves only unitless and pixel dimensions; percentages and other CSS units remain available through `SVGLength` but require external layout context.
   - Overrides on some properties like the fill color, stroke color, and stroke width that applies that value on all sublayers.
   - An ability to create a copy of the `SVGLayer`, which is useful for caching.
+
+### Root document attributes
+
+Use the completed `SVGLayer` for source-authored root dimensions. `viewBox` describes the SVG's internal user-coordinate rectangle, while `viewportSize` comes from concrete root `width` and `height` values. They are intentionally separate and neither should be inferred from `CALayer.frame`, which is renderer geometry.
+
+```swift
+let parser = NSXMLSVGParser(svgData: data) { result in
+  guard case .success(let layer) = result else { return }
+
+  let viewBox = layer.viewBox
+  let viewportSize = layer.viewportSize
+  let authoredWidth = layer.rootAttributes?.width?.rawValue
+}
+
+parser.startParsing()
+```
+
+The success callback is the lifecycle boundary at which the returned layer hierarchy is fully assembled. Percentage and other context-dependent lengths remain available as `SVGLength` values but do not produce a `viewportSize` until a caller supplies an appropriate layout policy.
 
 Other Interfaces
 ================
