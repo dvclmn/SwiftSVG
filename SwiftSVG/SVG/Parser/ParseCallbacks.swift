@@ -158,6 +158,9 @@ extension NSXMLSVGParser {
         elementNamespaceURI: namespaceURI,
         xlinkNamespaceURI: self.currentNamespaceURI(matching: Self.xlinkNamespaceURI),
       )
+      if attributeDict["viewBox"] != nil, rootAttributes.viewBox == nil {
+        self.parseDiagnostics.append(.invalidViewBox)
+      }
       rootElement.apply(rootAttributes)
       if self.elementStack.isEmpty {
         self.containerLayer.rootAttributes = rootAttributes

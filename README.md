@@ -201,6 +201,8 @@ parser.startParsing()
 
 SwiftSVG accepts a namespace-less root `<svg>` only through this compatibility path. It continues to reject a non-SVG root namespace and to ignore child elements outside the admitted document namespace.
 
+When a root `viewBox` is present but malformed, non-finite, zero-sized, or negative-sized, SwiftSVG ignores that `viewBox` and records `.invalidViewBox` in the successful parse report. A host can then preserve a usable concrete root viewport while clearly explaining the authored SVG issue.
+
 Other Interfaces
 ================
 

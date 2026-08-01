@@ -121,7 +121,9 @@ public struct SVGRootAttributes: Equatable, Sendable {
       minX.isFinite,
       minY.isFinite,
       width.isFinite,
-      height.isFinite
+      height.isFinite,
+      width > 0,
+      height > 0
     else {
       return nil
     }

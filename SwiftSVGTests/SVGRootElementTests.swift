@@ -66,13 +66,36 @@ struct SVGRootElementTests {
     #expect(attributes.viewportSize == nil)
   }
 
-  @Test("Malformed viewBox values are not partially accepted")
-  func rejectsMalformedViewBox() {
+  @Test(
+    "Malformed viewBox values are not partially accepted",
+    arguments: ["0 0 100 infinity", "0 0 100 0", "0 0 -100 200"]
+  )
+  func rejectsMalformedViewBox(_ viewBox: String) {
     let attributes = SVGRootAttributes(attributes: [
-      "viewBox": "0 0 100 infinity",
+      "viewBox": viewBox,
     ])
 
     #expect(attributes.viewBox == nil)
+  }
+
+  @Test @MainActor
+  func parserReportsInvalidViewBoxWhileRetainingUsableViewport() async throws {
+    let source = """
+      <svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 100 0">
+      </svg>
+      """
+    let parser = NSXMLSVGParser(svgData: Data(source.utf8))
+
+    let result = try await withCheckedThrowingContinuation { continuation in
+      parser.resultCompletionBlock = { result in
+        continuation.resume(with: result)
+      }
+      parser.startParsing()
+    }
+
+    #expect(result.layer.viewBox == nil)
+    #expect(result.layer.viewportSize == CGSize(width: 400, height: 300))
+    #expect(result.report.diagnostics == [.invalidViewBox])
   }
 
   @Test @MainActor
