@@ -74,7 +74,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
 
   let asyncCountQueue = DispatchQueue(
     label: "com.straussmade.swiftsvg.asyncCountQueue.serial",
-    qos: .userInteractive
+    qos: .userInteractive,
   )
 
   private init() {
@@ -91,7 +91,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
   public required init(
     svgData: Data,
     supportedElements: SVGParserSupportedElements? = .allSupportedElements,
-    completion: SVGCompletion? = nil
+    completion: SVGCompletion? = nil,
   ) {
     super.init(data: svgData)
     self.delegate = self
@@ -108,7 +108,7 @@ extension NSXMLSVGParser {
   public convenience init(
     svgData: Data,
     supportedElements: SVGParserSupportedElements? = .allSupportedElements,
-    resultCompletion: SVGParseCompletion?
+    resultCompletion: SVGParseCompletion?,
   ) {
     self.init(svgData: svgData, supportedElements: supportedElements)
     self.resultCompletionBlock = resultCompletion
@@ -124,14 +124,14 @@ extension NSXMLSVGParser {
   public convenience init(
     svgURL: URL,
     supportedElements: SVGParserSupportedElements? = nil,
-    completion: SVGCompletion? = nil
+    completion: SVGCompletion? = nil,
   ) {
     do {
       let urlData = try Data(contentsOf: svgURL)
       self.init(
         svgData: urlData,
         supportedElements: supportedElements,
-        completion: completion
+        completion: completion,
       )
     } catch {
       self.init()
@@ -147,7 +147,7 @@ extension NSXMLSVGParser {
   public convenience init(
     SVGURL: URL,
     supportedElements: SVGParserSupportedElements? = nil,
-    completion: SVGCompletion? = nil
+    completion: SVGCompletion? = nil,
   ) {
     self.init(svgURL: SVGURL, supportedElements: supportedElements, completion: completion)
   }
@@ -156,7 +156,7 @@ extension NSXMLSVGParser {
   public convenience init(
     SVGData: Data,
     supportedElements: SVGParserSupportedElements? = .allSupportedElements,
-    completion: SVGCompletion? = nil
+    completion: SVGCompletion? = nil,
   ) {
     self.init(svgData: SVGData, supportedElements: supportedElements, completion: completion)
   }
@@ -169,7 +169,14 @@ extension NSXMLSVGParser {
     guard let thisBoundingBox = boundingBox else {
       return
     }
-    print("Resizing container bounding box, from \(self.containerLayer.boundingBox) to \(thisBoundingBox)")
+    print(
+      """
+      Resizing container bounding box
+        from \(self.containerLayer.boundingBox) 
+        to \(thisBoundingBox)
+      
+      """
+    )
     self.containerLayer.boundingBox = self.containerLayer.boundingBox.union(thisBoundingBox)
   }
 }

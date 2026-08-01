@@ -118,6 +118,8 @@ extension NSXMLSVGParser {
 
     print(
       """
+
+      ----
       Parsing element <\(qName ?? elementName)> at \(Date.debug)
       Namespace: \(namespaceURI, default: "nil")
       Qualified name: \(qName, default: "nil")
@@ -179,12 +181,24 @@ extension NSXMLSVGParser {
       // Match the parser's exact attribute key. Unprefixed SVG attributes remain unprefixed,
       // while namespaced attributes retain their qualified spelling such as "xlink:href".
       if let attributeValue = attributeDict[attributeName] {
-        print("Processing attribute:\n\"\(attributeName)\", value: \"\(attributeValue)\"\n\n")
+        print(
+          """
+          Processing attribute:
+          \"\(attributeName)\", value: \"\(attributeValue)\"
+
+          """
+        )
         attributeClosure(attributeValue)
       }
     }
 
-    print("Adding to Stack:\n\(svgElement)")
+    print(
+      """
+      Adding to Stack:
+      \(svgElement)
+      ----
+      """
+    )
     self.elementStack.push(svgElement)
   }
 
@@ -248,7 +262,7 @@ extension NSXMLSVGParser {
       Parse Count: \(asyncParseCount)
       Root layer parsed: \(rootLayer != nil)
       =============================================
-      
+
       """
     )
 
