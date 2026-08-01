@@ -21,28 +21,81 @@ extension NSXMLSVGParser {
     self.asyncCountQueue.sync {
       self.didDispatchAllElements = false
     }
+    self.namespaceURIStackByPrefix.removeAll()
     self.parse()
   }
 
-  /// The `XMLParserDelegate` method called when the parser has started parsing an SVG element. This implementation will loop through all supported attributes and dispatch the attribute value to the given curried function.
+  /// Returns the namespace URI currently bound to a prefix.
+  func currentNamespaceURI(forPrefix prefix: String) -> String? {
+    self.namespaceURIStackByPrefix[prefix]?.last
+  }
+
+  /// Returns a currently mapped namespace URI, regardless of the prefix chosen by the document.
+  func currentNamespaceURI(matching namespaceURI: String) -> String? {
+    self.namespaceURIStackByPrefix.values
+      .compactMap { $0.last }
+      .first { $0 == namespaceURI }
+  }
+
+  /// The `XMLParserDelegate` callback that reports a namespace declaration entering scope.
+  open func parser(
+    _ parser: XMLParser,
+    didStartMappingPrefix prefix: String,
+    toURI namespaceURI: String
+  ) {
+    self.namespaceURIStackByPrefix[prefix, default: []].append(namespaceURI)
+  }
+
+  /// The `XMLParserDelegate` callback that reports a namespace declaration leaving scope.
+  open func parser(
+    _ parser: XMLParser,
+    didEndMappingPrefix prefix: String
+  ) {
+    guard var namespaceURIs = self.namespaceURIStackByPrefix[prefix] else {
+      return
+    }
+
+    guard !namespaceURIs.isEmpty else {
+      self.namespaceURIStackByPrefix.removeValue(forKey: prefix)
+      return
+    }
+
+    namespaceURIs.removeLast()
+    if namespaceURIs.isEmpty {
+      self.namespaceURIStackByPrefix.removeValue(forKey: prefix)
+    } else {
+      self.namespaceURIStackByPrefix[prefix] = namespaceURIs
+    }
+  }
+
+  /// The `XMLParserDelegate` method called when the parser has started parsing
+  /// an SVG element. This implementation will loop through all supported attributes
+  /// and dispatch the attribute value to the given curried function.
   open func parser(
     _ parser: XMLParser,
     didStartElement elementName: String,
     namespaceURI: String?,
     qualifiedName qName: String?,
-    attributes attributeDict: [String: String]
+    attributes attributeDict: [String: String],
   ) {
 
     print(
       """
-
-      Parsing element \"\(elementName)\" at \(Date.debug)
+      Parsing element <\(qName ?? elementName)> at \(Date.debug)
       Namespace: \(String(describing: namespaceURI))
       Qualified name: \(String(describing: qName))
       Attributes: \(attributeDict.prettyPrinted())
 
 
       """)
+    guard namespaceURI == Self.svgNamespaceURI else {
+      print(
+        "Skipping element \(qName ?? elementName) outside the SVG namespace: "
+          + "\(String(describing: namespaceURI))"
+      )
+      return
+    }
+
     guard let elementType = self.supportedElements?.tags[elementName] else {
       print("\(elementName) is unsupported, skipping.")
       //      print(
@@ -54,7 +107,11 @@ extension NSXMLSVGParser {
     let svgElement = elementType()
 
     if let rootElement = svgElement as? SVGRootElement {
-      let rootAttributes = SVGRootAttributes(attributes: attributeDict)
+      let rootAttributes = SVGRootAttributes(
+        attributes: attributeDict,
+        elementNamespaceURI: namespaceURI,
+        xlinkNamespaceURI: self.currentNamespaceURI(matching: Self.xlinkNamespaceURI)
+      )
       rootElement.apply(rootAttributes)
       if self.elementStack.isEmpty {
         self.containerLayer.rootAttributes = rootAttributes
@@ -70,6 +127,8 @@ extension NSXMLSVGParser {
 
     for (attributeName, attributeClosure) in svgElement.supportedAttributes {
 
+      // Match the parser's exact attribute key. Unprefixed SVG attributes remain unprefixed,
+      // while namespaced attributes retain their qualified spelling such as "xlink:href".
       if let attributeValue = attributeDict[attributeName] {
         print("Processing attribute:\n\"\(attributeName)\", value: \"\(attributeValue)\"\n\n")
         attributeClosure(attributeValue)
@@ -89,8 +148,12 @@ extension NSXMLSVGParser {
     _ parser: XMLParser,
     didEndElement elementName: String,
     namespaceURI: String?,
-    qualifiedName qName: String?
+    qualifiedName qName: String?,
   ) {
+
+    guard namespaceURI == Self.svgNamespaceURI else {
+      return
+    }
 
     guard let last = self.elementStack.last else {
       return

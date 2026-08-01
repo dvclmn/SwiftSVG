@@ -27,10 +27,10 @@ public struct SVGRootAttributes: Equatable, Sendable {
   /// The root SVG `version` attribute.
   public let version: String?
 
-  /// The root `xmlns` attribute.
+  /// The resolved namespace URI of the root element.
   public let namespace: String?
 
-  /// The root `xmlns:xlink` attribute.
+  /// The XLink namespace URI declared in scope at the root element.
   public let xlinkNamespace: String?
 
   /// The raw root `preserveAspectRatio` attribute.
@@ -55,7 +55,10 @@ public struct SVGRootAttributes: Equatable, Sendable {
     self.preserveAspectRatio = preserveAspectRatio
   }
 
-  /// Creates root attributes from the dictionary supplied by `XMLParser`.
+  /// Creates root attributes from a raw root-element attribute dictionary.
+  ///
+  /// This form is useful when namespace declarations are still present in the dictionary. The
+  /// namespace-aware parser path uses the initialiser that accepts `elementNamespaceURI`.
   public init(attributes: [String: String]) {
     self.init(
       width: attributes["width"].map(SVGLength.init(rawValue:)),
@@ -64,6 +67,27 @@ public struct SVGRootAttributes: Equatable, Sendable {
       version: attributes["version"],
       namespace: attributes["xmlns"],
       xlinkNamespace: attributes["xmlns:xlink"],
+      preserveAspectRatio: attributes["preserveAspectRatio"],
+    )
+  }
+
+  /// Creates root attributes from `XMLParser` values when namespace processing is enabled.
+  ///
+  /// `XMLParser` reports namespace declarations through its namespace-mapping callbacks rather
+  /// than retaining `xmlns` declarations in `attributeDict`. The direct dictionary initialiser
+  /// remains available for callers that already have the authored attributes.
+  init(
+    attributes: [String: String],
+    elementNamespaceURI: String?,
+    xlinkNamespaceURI: String? = nil,
+  ) {
+    self.init(
+      width: attributes["width"].map(SVGLength.init(rawValue:)),
+      height: attributes["height"].map(SVGLength.init(rawValue:)),
+      viewBox: attributes["viewBox"].flatMap(Self.parseViewBox),
+      version: attributes["version"],
+      namespace: elementNamespaceURI ?? attributes["xmlns"],
+      xlinkNamespace: xlinkNamespaceURI ?? attributes["xmlns:xlink"],
       preserveAspectRatio: attributes["preserveAspectRatio"],
     )
   }

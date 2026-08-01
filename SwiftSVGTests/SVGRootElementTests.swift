@@ -95,4 +95,28 @@ struct SVGRootElementTests {
     #expect(layer.sublayers?.count == 1)
     #expect(layer.sublayers?.first?.frame == layer.viewBox)
   }
+
+  @Test @MainActor
+  func parserProcessesElementNamespacesAndRootMappings() async throws {
+    let source = """
+      <svg:svg width="400" height="300" viewBox="0 0 400 300"
+        xmlns:svg="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <svg:circle cx="200" cy="150" r="100" />
+        <foreign:circle xmlns:foreign="urn:foreign" cx="200" cy="150" r="50" />
+      </svg:svg>
+      """
+    let parser = NSXMLSVGParser(svgData: Data(source.utf8))
+
+    let layer = try await withCheckedThrowingContinuation { continuation in
+      parser.completionBlock = { result in
+        continuation.resume(with: result)
+      }
+      parser.startParsing()
+    }
+
+    #expect(layer.rootAttributes?.namespace == "http://www.w3.org/2000/svg")
+    #expect(layer.rootAttributes?.xlinkNamespace == "http://www.w3.org/1999/xlink")
+    #expect(layer.sublayers?.count == 1)
+  }
 }

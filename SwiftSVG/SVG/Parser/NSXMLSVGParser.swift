@@ -38,6 +38,12 @@ extension NSXMLSVGParser: SVGParser {}
 /// Concrete implementation of `SVGParser` that uses Foundation's `XMLParser` to parse a given SVG file.
 open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
 
+  /// The namespace URI that identifies SVG elements in an XML document.
+  static let svgNamespaceURI = "http://www.w3.org/2000/svg"
+
+  /// The namespace URI traditionally used by SVG's legacy XLink attributes.
+  static let xlinkNamespaceURI = "http://www.w3.org/1999/xlink"
+
   /// Error type used when a fatal error has occured
   enum SVGParserError {
     case invalidSVG
@@ -48,6 +54,10 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
   var didDispatchAllElements = true
   var elementStack = Stack<SVGElement>()
   var rootLayer: CALayer?
+
+  /// Namespace mappings currently in scope, stored as stacks so nested declarations can shadow
+  /// and then restore an outer declaration with the same prefix.
+  var namespaceURIStackByPrefix: [String: [String]] = [:]
 
   public var completionBlock: SVGCompletion?
   public var supportedElements: SVGParserSupportedElements? = nil
@@ -78,6 +88,8 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
   ) {
     super.init(data: svgData)
     self.delegate = self
+    self.shouldProcessNamespaces = true
+    self.shouldReportNamespacePrefixes = true
     self.supportedElements = supportedElements
     self.completionBlock = completion
   }

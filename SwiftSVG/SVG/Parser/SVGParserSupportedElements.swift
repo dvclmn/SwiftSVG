@@ -37,7 +37,7 @@ public struct SVGParserSupportedElements {
     public typealias ElementGenerator = () -> SVGElement
     
     /// A dictionary of all the supported elements and attributes for a given parser.
-    /// - Parameter Key: A string that matches the SVG attribute
+    /// - Parameter Key: A local SVG element name, such as `circle` or `path`.
     /// - Parameter Value: A curried function to use to handle the particular attribute
     public let tags: [String : ElementGenerator]
     
