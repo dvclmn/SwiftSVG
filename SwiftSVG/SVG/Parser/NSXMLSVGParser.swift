@@ -97,6 +97,7 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
     self.delegate = self
     self.shouldProcessNamespaces = true
     self.shouldReportNamespacePrefixes = true
+    self.shouldResolveExternalEntities = false
     self.supportedElements = supportedElements
     self.completionBlock = completion
   }

@@ -15,6 +15,17 @@ import Foundation
 /// and should not be used as a substitute for either value.
 public struct SVGRootAttributes: Equatable, Sendable {
 
+  /// Root attributes consumed as document metadata rather than renderer attributes.
+  static let recognisedAttributeNames: Set<String> = [
+    "width",
+    "height",
+    "viewBox",
+    "version",
+    "xmlns",
+    "xmlns:xlink",
+    "preserveAspectRatio",
+  ]
+
   /// The root `width` attribute, including its authored unit.
   public let width: SVGLength?
 

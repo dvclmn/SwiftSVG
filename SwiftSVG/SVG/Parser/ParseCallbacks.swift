@@ -106,8 +106,8 @@ extension NSXMLSVGParser {
   }
 
   /// The `XMLParserDelegate` method called when the parser has started parsing
-  /// an SVG element. This implementation will loop through all supported attributes
-  /// and dispatch the attribute value to the given curried function.
+  /// an SVG element. This implementation dispatches supported attributes to their
+  /// curried functions and prints any attributes that SwiftSVG does not consume.
   open func parser(
     _ parser: XMLParser,
     didStartElement elementName: String,
@@ -176,6 +176,11 @@ extension NSXMLSVGParser {
       }
     }
 
+    var consumedAttributeNames = Set(svgElement.supportedAttributes.keys)
+    if svgElement is SVGRootElement {
+      consumedAttributeNames.formUnion(SVGRootAttributes.recognisedAttributeNames)
+    }
+
     for (attributeName, attributeClosure) in svgElement.supportedAttributes {
 
       // Match the parser's exact attribute key. Unprefixed SVG attributes remain unprefixed,
@@ -190,6 +195,14 @@ extension NSXMLSVGParser {
         )
         attributeClosure(attributeValue)
       }
+    }
+
+    for (attributeName, attributeValue) in attributeDict.sorted(by: { $0.key < $1.key })
+    where !consumedAttributeNames.contains(attributeName) {
+      print(
+        "Skipping attribute on <\(qName ?? elementName)>: \"\(attributeName)\" = \"\(attributeValue)\" "
+          + "(unsupported by SwiftSVG; not applied)."
+      )
     }
 
     print(
