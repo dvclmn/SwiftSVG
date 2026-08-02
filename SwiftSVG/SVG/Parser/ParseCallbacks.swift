@@ -34,6 +34,8 @@ extension NSXMLSVGParser {
 
   /// Records how this document identifies its root SVG element.
   func establishNamespaceMode(elementName: String, namespaceURI: String?) {
+    let namespaceURI = self.normalisedNamespaceURI(namespaceURI)
+
     guard elementName == SVGRootElement.elementName else {
       self.parserFailure = .invalidRootElement(name: elementName, namespaceURI: namespaceURI)
       return
@@ -45,21 +47,28 @@ extension NSXMLSVGParser {
       case nil:
         self.namespaceMode = .unnamespacedCompatibility
         self.parseDiagnostics.append(.missingSVGNamespace)
-      default:
-        self.parserFailure = .invalidRootElement(name: elementName, namespaceURI: namespaceURI)
+      case let namespaceURI?:
+        self.parserFailure = .unsupportedRootNamespace(namespaceURI: namespaceURI)
     }
   }
 
   /// Whether an element's resolved namespace belongs to the current document's admitted SVG mode.
   func shouldProcessElement(namespaceURI: String?) -> Bool {
-    switch self.namespaceMode {
-      case .svg:
-        namespaceURI == Self.svgNamespaceURI
-      case .unnamespacedCompatibility:
-        namespaceURI == nil
-      case nil:
-        false
+    let namespaceURI = self.normalisedNamespaceURI(namespaceURI)
+
+    return switch self.namespaceMode {
+      case .svg: namespaceURI == Self.svgNamespaceURI
+      case .unnamespacedCompatibility: namespaceURI == nil
+      case nil: false
     }
+  }
+
+  /// Normalises Foundation's empty-string representation of an absent XML namespace.
+  func normalisedNamespaceURI(_ namespaceURI: String?) -> String? {
+    guard let namespaceURI, !namespaceURI.isEmpty else {
+      return nil
+    }
+    return namespaceURI
   }
 
   /// Returns the namespace URI currently bound to a prefix.
@@ -115,6 +124,7 @@ extension NSXMLSVGParser {
     qualifiedName qName: String?,
     attributes attributeDict: [String: String],
   ) {
+    let namespaceURI = self.normalisedNamespaceURI(namespaceURI)
 
     print(
       """
@@ -226,6 +236,7 @@ extension NSXMLSVGParser {
     namespaceURI: String?,
     qualifiedName qName: String?,
   ) {
+    let namespaceURI = self.normalisedNamespaceURI(namespaceURI)
 
     guard self.parserFailure == nil, self.shouldProcessElement(namespaceURI: namespaceURI) else {
       return

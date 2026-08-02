@@ -189,7 +189,45 @@ struct SVGRootElementTests {
 
     #expect(
       (error as? SVGParserError)
-        == .invalidRootElement(name: "svg", namespaceURI: "urn:foreign")
+        == .unsupportedRootNamespace(namespaceURI: "urn:foreign")
+    )
+  }
+
+  @Test @MainActor
+  func parserFailsForANonSVGRootElement() async {
+    let source = """
+      <document xmlns="http://www.w3.org/2000/svg">
+      </document>
+      """
+    let parser = NSXMLSVGParser(svgData: Data(source.utf8))
+
+    let error: Error? = await withCheckedContinuation { continuation in
+      parser.resultCompletionBlock = { result in
+        switch result {
+          case .success:
+            continuation.resume(returning: nil)
+          case .failure(let error):
+            continuation.resume(returning: error)
+        }
+      }
+      parser.startParsing()
+    }
+
+    #expect(
+      (error as? SVGParserError)
+        == .invalidRootElement(name: "document", namespaceURI: "http://www.w3.org/2000/svg")
+    )
+  }
+
+  @Test("SVG parser errors describe the failed root condition")
+  func describesRootFailures() {
+    #expect(
+      SVGParserError.invalidRootElement(name: "document", namespaceURI: nil).errorDescription
+        == "Expected the document root to be `<svg>`, but found `<document>` without a namespace."
+    )
+    #expect(
+      SVGParserError.unsupportedRootNamespace(namespaceURI: "urn:foreign").errorDescription
+        == "The root `<svg>` element declares unsupported namespace `urn:foreign`. Expected `http://www.w3.org/2000/svg`, or no namespace for compatibility mode."
     )
   }
 }
