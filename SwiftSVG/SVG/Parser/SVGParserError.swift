@@ -21,15 +21,19 @@ public enum SVGParserError: Error, Equatable, LocalizedError, Sendable {
   public var errorDescription: String? {
     switch self {
       case .invalidRootElement(let name, let namespaceURI):
-        if let namespaceURI {
+        guard name != "svg" else {
+          preconditionFailure("This error shouldn't be thrown if the root element is named 'svg'.")
+        }
+        return if let namespaceURI {
           "Expected the document root to be `<svg>`, but found `<\(name)>` in the `\(namespaceURI)` namespace."
         } else {
           "Expected the document root to be `<svg>`, but found `<\(name)>` without a namespace."
         }
       case .unsupportedRootNamespace(let namespaceURI):
-        "The root `<svg>` element declares unsupported namespace `\(namespaceURI)`. Expected `http://www.w3.org/2000/svg`, or no namespace for compatibility mode."
+        return "The root `<svg>` element declares unsupported namespace `\(namespaceURI)`. Expected `http://www.w3.org/2000/svg`, or no namespace for compatibility mode."
+        
       case .missingRootSVGElement:
-        "The document did not produce an SVG root element."
+        return "The document did not produce an SVG root element."
     }
   }
 }

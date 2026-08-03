@@ -32,59 +32,6 @@ import UIKit
 import AppKit
 #endif
 
-/// A callback invoked when SVG parsing and layer assembly succeeds or fails.
-public typealias SVGCompletion = (Result<SVGLayer, Error>) -> Void
-
-@available(*, deprecated, renamed: "SVGCompletion")
-public typealias SVGResult = SVGCompletion
-
-/// The namespace policy used while parsing the SVG document.
-public enum SVGNamespaceMode: Equatable, Sendable {
-  /// The document declared the SVG XML namespace and was parsed as a conforming SVG XML document.
-  case svg
-
-  /// The document omitted the SVG XML namespace and was accepted using SwiftSVG's compatibility path.
-  case unnamespacedCompatibility
-}
-
-
-/// Typed, non-fatal information produced with a successfully rendered SVG document.
-public struct SVGParseReport: Equatable, Sendable {
-  /// The namespace policy that admitted the document.
-  public let namespaceMode: SVGNamespaceMode
-
-  /// Conditions which did not prevent rendering, but are useful to a host application or editor.
-  public let diagnostics: [SVGParseDiagnostic]
-
-  /// Whether parsing completed with information a host may wish to surface.
-  public var hasDiagnostics: Bool {
-    !self.diagnostics.isEmpty
-  }
-
-  public init(namespaceMode: SVGNamespaceMode, diagnostics: [SVGParseDiagnostic]) {
-    self.namespaceMode = namespaceMode
-    self.diagnostics = diagnostics
-  }
-}
-
-/// The fully assembled renderer layer and its typed parse report.
-public struct SVGParseResult {
-  /// The layer hierarchy that SwiftSVG produced.
-  public let layer: SVGLayer
-
-  /// Information about how that layer hierarchy was produced.
-  public let report: SVGParseReport
-
-  public init(layer: SVGLayer, report: SVGParseReport) {
-    self.layer = layer
-    self.report = report
-  }
-}
-
-/// A callback invoked when SVG parsing completes with both the rendered layer and parse report.
-public typealias SVGParseCompletion = (Result<SVGParseResult, Error>) -> Void
-
-
 /// A protocol describing an XML parser capable of parsing SVG data
 public protocol SVGParser {
 
@@ -93,7 +40,11 @@ public protocol SVGParser {
   ///    - SVGData: SVG file as Data
   ///    - supportedElements: The elements and corresponding attribiutes the parser can parse
   ///    - completion: A closure to execute after the parser has completed parsing and processing the SVG
-  init(svgData: Data, supportedElements: SVGParserSupportedElements?, completion: SVGCompletion?)
+  init(
+    svgData: Data,
+    supportedElements: SVGParserSupportedElements?,
+    completion: SVGCompletion?
+  )
 
   /// A closure that is executed after all elements have been processed. Should be guaranteed to be executed after all elements have been processed, even if parsing asynchronously.
   var completionBlock: SVGCompletion? { get }
