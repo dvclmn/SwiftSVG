@@ -11,8 +11,6 @@ extension NSXMLSVGParser {
 
   /// Records how this document identifies its root SVG element.
   func establishNamespaceMode(elementName: String, namespaceURI: String?) {
-    let namespaceURI = self.normalisedNamespaceURI(namespaceURI)
-
     guard elementName == SVGRootElement.elementName else {
       self.parserFailure = .invalidRootElement(name: elementName, namespaceURI: namespaceURI)
       return

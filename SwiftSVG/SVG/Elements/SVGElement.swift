@@ -66,6 +66,20 @@ public protocol SVGElement {
   func didProcessElement(in container: SVGContainerElement?)
 }
 
+extension SVGElement {
+
+  /// Applies a supported attribute and reports whether the element recognises its name.
+  @discardableResult
+  func applySupportedAttribute(named name: String, value: String) -> Bool {
+    guard let applyAttribute = self.supportedAttributes[name] else {
+      return false
+    }
+
+    applyAttribute(value)
+    return true
+  }
+}
+
 extension SVGElement where Self: CustomStringConvertible {
   public var description: String {
     """

@@ -70,69 +70,49 @@ public struct SVGParserSupportedElements {
     public static var allSupportedElements: SVGParserSupportedElements {
         let supportedElements: [String : ElementGenerator] = [
             SVGCircle.elementName: {
-                let returnElement = SVGCircle()
+                var returnElement = SVGCircle()
                 returnElement.supportedAttributes = [
                     "cx": unown(returnElement, SVGCircle.xCenter),
                     "cy": unown(returnElement, SVGCircle.yCenter),
                     "r": unown(returnElement, SVGCircle.radius),
                 ]
-                returnElement.supportedAttributes.add(returnElement.identityAttributes)
-                returnElement.supportedAttributes.add(returnElement.fillAttributes)
-                returnElement.supportedAttributes.add(returnElement.strokeAttributes)
-                returnElement.supportedAttributes.add(returnElement.styleAttributes)
-                returnElement.supportedAttributes.add(returnElement.transformAttributes)
+                returnElement.addStandardAttributes()
                 return returnElement
             },
             SVGEllipse.elementName: {
-                let returnElement = SVGEllipse()
+                var returnElement = SVGEllipse()
                 returnElement.supportedAttributes = [
                   "cx": unown(returnElement, SVGEllipse.xCenter),
                   "cy": unown(returnElement, SVGEllipse.yCenter),
                   "rx": unown(returnElement, SVGEllipse.xRadius),
                   "ry": unown(returnElement, SVGEllipse.yRadius),
                 ]
-                returnElement.supportedAttributes.add(returnElement.identityAttributes)
-                returnElement.supportedAttributes.add(returnElement.fillAttributes)
-                returnElement.supportedAttributes.add(returnElement.strokeAttributes)
-                returnElement.supportedAttributes.add(returnElement.styleAttributes)
-                returnElement.supportedAttributes.add(returnElement.transformAttributes)
+                returnElement.addStandardAttributes()
                 return returnElement
             },
             SVGGroup.elementName: {
                 let returnElement = SVGGroup()
-                returnElement.supportedAttributes.add(returnElement.identityAttributes)
-                returnElement.supportedAttributes.add(returnElement.fillAttributes)
-                returnElement.supportedAttributes.add(returnElement.strokeAttributes)
-                returnElement.supportedAttributes.add(returnElement.styleAttributes)
-                returnElement.supportedAttributes.add(returnElement.transformAttributes)
+                returnElement.addStandardAttributes()
                 return returnElement
             },
             SVGLine.elementName: {
-                let returnElement = SVGLine()
+                var returnElement = SVGLine()
                 returnElement.supportedAttributes = [
                     "x1": unown(returnElement, SVGLine.x1),
                     "x2": unown(returnElement, SVGLine.x2),
                     "y1": unown(returnElement, SVGLine.y1),
                     "y2": unown(returnElement, SVGLine.y2),
                 ]
-                returnElement.supportedAttributes.add(returnElement.identityAttributes)
-                returnElement.supportedAttributes.add(returnElement.fillAttributes)
-                returnElement.supportedAttributes.add(returnElement.strokeAttributes)
-                returnElement.supportedAttributes.add(returnElement.styleAttributes)
-                returnElement.supportedAttributes.add(returnElement.transformAttributes)
+                returnElement.addStandardAttributes()
                 return returnElement
             },
             SVGPath.elementName: {
-                let returnElement = SVGPath()
+                var returnElement = SVGPath()
                 returnElement.supportedAttributes = [
                     "d": unown(returnElement, SVGPath.parseD),
                     "clip-rule": unown(returnElement, SVGPath.clipRule),
                 ]
-                returnElement.supportedAttributes.add(returnElement.identityAttributes)
-                returnElement.supportedAttributes.add(returnElement.fillAttributes)
-                returnElement.supportedAttributes.add(returnElement.strokeAttributes)
-                returnElement.supportedAttributes.add(returnElement.styleAttributes)
-                returnElement.supportedAttributes.add(returnElement.transformAttributes)
+                returnElement.addStandardAttributes()
                 return returnElement
             },
             SVGPolygon.elementName: {
@@ -140,11 +120,7 @@ public struct SVGParserSupportedElements {
                 returnElement.supportedAttributes = [
                     "points":  returnElement.points,
                 ]
-                returnElement.supportedAttributes.add(returnElement.identityAttributes)
-                returnElement.supportedAttributes.add(returnElement.fillAttributes)
-                returnElement.supportedAttributes.add(returnElement.strokeAttributes)
-                returnElement.supportedAttributes.add(returnElement.styleAttributes)
-                returnElement.supportedAttributes.add(returnElement.transformAttributes)
+                returnElement.addStandardAttributes()
                 return returnElement
             },
             SVGPolyline.elementName: {
@@ -152,15 +128,11 @@ public struct SVGParserSupportedElements {
                 returnElement.supportedAttributes = [
                     "points":  returnElement.points,
                 ]
-                returnElement.supportedAttributes.add(returnElement.identityAttributes)
-                returnElement.supportedAttributes.add(returnElement.fillAttributes)
-                returnElement.supportedAttributes.add(returnElement.strokeAttributes)
-                returnElement.supportedAttributes.add(returnElement.styleAttributes)
-                returnElement.supportedAttributes.add(returnElement.transformAttributes)
+                returnElement.addStandardAttributes()
                 return returnElement
             },
             SVGRectangle.elementName: {
-                let returnElement = SVGRectangle()
+                var returnElement = SVGRectangle()
                 returnElement.supportedAttributes = [
                     "height": unown(returnElement, SVGRectangle.rectangleHeight),
                     "rx": unown(returnElement, SVGRectangle.xCornerRadius),
@@ -169,11 +141,7 @@ public struct SVGParserSupportedElements {
                     "x": unown(returnElement, SVGRectangle.parseX),
                     "y": unown(returnElement, SVGRectangle.parseY),
                 ]
-                returnElement.supportedAttributes.add(returnElement.identityAttributes)
-                returnElement.supportedAttributes.add(returnElement.fillAttributes)
-                returnElement.supportedAttributes.add(returnElement.strokeAttributes)
-                returnElement.supportedAttributes.add(returnElement.styleAttributes)
-                returnElement.supportedAttributes.add(returnElement.transformAttributes)
+                returnElement.addStandardAttributes()
                 return returnElement
             },
             SVGRootElement.elementName: {
@@ -186,4 +154,28 @@ public struct SVGParserSupportedElements {
         return SVGParserSupportedElements(tags: supportedElements)
     }
     
+}
+
+private extension SVGShapeElement {
+
+    /// Adds the attribute families shared by every shape element supported by the default parser.
+    mutating func addStandardAttributes() {
+        self.supportedAttributes.add(self.identityAttributes)
+        self.supportedAttributes.add(self.fillAttributes)
+        self.supportedAttributes.add(self.strokeAttributes)
+        self.supportedAttributes.add(self.styleAttributes)
+        self.supportedAttributes.add(self.transformAttributes)
+    }
+}
+
+private extension SVGGroup {
+
+    /// Adds the attribute families shared by the group and shape elements supported by the default parser.
+    func addStandardAttributes() {
+        self.supportedAttributes.add(self.identityAttributes)
+        self.supportedAttributes.add(self.fillAttributes)
+        self.supportedAttributes.add(self.strokeAttributes)
+        self.supportedAttributes.add(self.styleAttributes)
+        self.supportedAttributes.add(self.transformAttributes)
+    }
 }

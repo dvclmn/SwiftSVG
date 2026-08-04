@@ -81,11 +81,10 @@ extension Stylable where Self: SVGElement {
         let valueString = styleString[valueRange.location..<valueRange.location + valueRange.length]
           .trimWhitespace()
 
-        guard let thisClosure = self.supportedAttributes[styleName] else {
+        guard self.applySupportedAttribute(named: styleName, value: valueString) else {
           print("Couldn't set: \(styleName)")
           return
         }
-        thisClosure(valueString)
       })
 
     } catch {

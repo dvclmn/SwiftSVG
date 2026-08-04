@@ -35,8 +35,6 @@ extension NSXMLSVGParser {
   /// Whether an element's resolved namespace belongs to the current
   /// document's admitted SVG mode.
   func shouldProcessElement(namespaceURI: String?) -> Bool {
-    let namespaceURI = self.normalisedNamespaceURI(namespaceURI)
-
     return switch self.namespaceMode {
       case .svg: namespaceURI == Self.svgNamespaceURI
       case .unnamespacedCompatibility: namespaceURI == nil
@@ -86,104 +84,52 @@ extension NSXMLSVGParser {
     attributes attributeDict: [String: String],
   ) {
     let namespaceURI = self.normalisedNamespaceURI(namespaceURI)
+    let elementDisplayName = qName ?? elementName
 
-    print(
-      """
-
-      ----
-      Parsing element <\(qName ?? elementName)> at \(Date.debug)
-      Namespace: \(namespaceURI, default: "nil")
-      Qualified name: \(qName, default: "nil")
-      Attributes: \(attributeDict.prettyPrinted())
-
-
-      """)
-    if !self.didSeeDocumentRootElement {
-      self.didSeeDocumentRootElement = true
-      self.establishNamespaceMode(
-        elementName: elementName,
-        namespaceURI: namespaceURI,
-      )
-    }
+    self.logStartedElement(
+      elementDisplayName,
+      namespaceURI: namespaceURI,
+      qualifiedName: qName,
+      attributes: attributeDict,
+    )
+    self.establishNamespaceModeIfNeeded(
+      elementName: elementName,
+      namespaceURI: namespaceURI,
+    )
 
     guard self.parserFailure == nil else { return }
 
     guard self.shouldProcessElement(namespaceURI: namespaceURI) else {
-      print(
-        "Skipping element \(qName ?? elementName) outside the admitted SVG namespace: "
-          + "\(String(describing: namespaceURI))"
-      )
+      self.logSkippedElement(elementDisplayName, namespaceURI: namespaceURI)
       return
     }
 
-    guard let elementType = self.supportedElements?.tags[elementName] else {
+    guard let makeElement = self.supportedElements?.tags[elementName] else {
       print("\(elementName) is unsupported, skipping.")
-      //      print(
-      //        "\(elementName) is unsupported. For a complete list of supported elements, see the `allSupportedElements` variable in the `SVGParserSupportedElements` struct. Click through on the `elementName` variable name to see the SVG tag name."
-      //      )
       return
     }
 
-    let svgElement = elementType()
+    let svgElement = makeElement()
 
-    if let rootElement = svgElement as? SVGRootElement {
-      let rootAttributes = SVGRootAttributes(
-        attributes: attributeDict,
-        elementNamespaceURI: namespaceURI,
-        xlinkNamespaceURI: self.currentNamespaceURI(matching: Self.xlinkNamespaceURI),
-      )
-      if attributeDict["viewBox"] != nil, rootAttributes.viewBox == nil {
-        self.parseDiagnostics.append(.invalidViewBox)
-      }
-      rootElement.apply(rootAttributes)
-      if self.elementStack.isEmpty {
-        self.containerLayer.rootAttributes = rootAttributes
-      }
-    }
+    let rootElement = svgElement as? SVGRootElement
 
-    if var asyncElement = svgElement as? ParsesAsynchronously {
-      self.asyncCountQueue.sync {
-        self.asyncParseCount += 1
-        asyncElement.asyncParseManager = self
-      }
-    }
-
-    var consumedAttributeNames = Set(svgElement.supportedAttributes.keys)
-    if svgElement is SVGRootElement {
-      consumedAttributeNames.formUnion(SVGRootAttributes.recognisedAttributeNames)
-    }
-
-    for (attributeName, attributeClosure) in svgElement.supportedAttributes {
-
-      // Match the parser's exact attribute key. Unprefixed SVG attributes remain unprefixed,
-      // while namespaced attributes retain their qualified spelling such as "xlink:href".
-      if let attributeValue = attributeDict[attributeName] {
-        print(
-          """
-          Processing attribute:
-          \"\(attributeName)\", value: \"\(attributeValue)\"
-
-          """
-        )
-        attributeClosure(attributeValue)
-      }
-    }
-
-    for (attributeName, attributeValue) in attributeDict.sorted(by: { $0.key < $1.key })
-    where !consumedAttributeNames.contains(attributeName) {
-      print(
-        "Skipping attribute on <\(qName ?? elementName)>: \"\(attributeName)\" = \"\(attributeValue)\" "
-          + "(unsupported by SwiftSVG; not applied)."
+    if let rootElement {
+      self.processRootAttributes(
+        attributeDict,
+        for: rootElement,
+        namespaceURI: namespaceURI,
       )
     }
 
-    print(
-      """
-      Adding to Stack:
-      \(svgElement)
-      ----
-      """
+    self.registerAsynchronousParsingIfNeeded(for: svgElement)
+    self.applySupportedAttributes(attributeDict, to: svgElement)
+    self.reportUnsupportedAttributes(
+      attributeDict,
+      for: svgElement,
+      elementDisplayName: elementDisplayName,
+      isRootElement: rootElement != nil,
     )
+    self.logAddedToStack(svgElement)
     self.elementStack.push(svgElement)
   }
 
@@ -280,4 +226,135 @@ extension NSXMLSVGParser {
 
   }
 
+}
+
+// MARK: - Helpers
+extension NSXMLSVGParser {
+
+  fileprivate func establishNamespaceModeIfNeeded(
+    elementName: String,
+    namespaceURI: String?,
+  ) {
+    guard !self.didSeeDocumentRootElement else { return }
+
+    self.didSeeDocumentRootElement = true
+    self.establishNamespaceMode(
+      elementName: elementName,
+      namespaceURI: namespaceURI,
+    )
+  }
+
+  fileprivate func processRootAttributes(
+    _ attributes: [String: String],
+    for rootElement: SVGRootElement,
+    namespaceURI: String?,
+  ) {
+    let rootAttributes = SVGRootAttributes(
+      attributes: attributes,
+      elementNamespaceURI: namespaceURI,
+      xlinkNamespaceURI: self.currentNamespaceURI(matching: Self.xlinkNamespaceURI),
+    )
+
+    if attributes["viewBox"] != nil, rootAttributes.viewBox == nil {
+      self.parseDiagnostics.append(.invalidViewBox)
+    }
+
+    rootElement.apply(rootAttributes)
+
+    guard self.elementStack.isEmpty else { return }
+    self.containerLayer.rootAttributes = rootAttributes
+  }
+
+  fileprivate func registerAsynchronousParsingIfNeeded(for element: SVGElement) {
+    guard var asynchronousElement = element as? ParsesAsynchronously else { return }
+
+    self.asyncCountQueue.sync {
+      self.asyncParseCount += 1
+      asynchronousElement.asyncParseManager = self
+    }
+  }
+
+  fileprivate func applySupportedAttributes(
+    _ attributes: [String: String],
+    to element: SVGElement,
+  ) {
+    for attributeName in element.supportedAttributes.keys {
+      // Match the parser's exact attribute key. Unprefixed SVG attributes remain unprefixed,
+      // while namespaced attributes retain their qualified spelling such as "xlink:href".
+      guard let attributeValue = attributes[attributeName] else { continue }
+
+      self.logProcessedAttribute(attributeName, value: attributeValue)
+      element.applySupportedAttribute(named: attributeName, value: attributeValue)
+    }
+  }
+
+  fileprivate func reportUnsupportedAttributes(
+    _ attributes: [String: String],
+    for element: SVGElement,
+    elementDisplayName: String,
+    isRootElement: Bool,
+  ) {
+    var consumedAttributeNames = Set(element.supportedAttributes.keys)
+    if isRootElement {
+      consumedAttributeNames.formUnion(SVGRootAttributes.recognisedAttributeNames)
+    }
+
+    for (attributeName, attributeValue) in attributes.sorted(by: { $0.key < $1.key })
+    where !consumedAttributeNames.contains(attributeName) {
+      print(
+        "Skipping attribute on <\(elementDisplayName)>: \"\(attributeName)\" = \"\(attributeValue)\" "
+          + "(unsupported by SwiftSVG; not applied)."
+      )
+    }
+  }
+}
+
+// MARK: - Console Logging
+extension NSXMLSVGParser {
+
+  func logStartedElement(
+    _ elementDisplayName: String,
+    namespaceURI: String?,
+    qualifiedName: String?,
+    attributes: [String: String],
+  ) {
+    print(
+      """
+
+      ----
+      Parsing element <\(elementDisplayName)> at \(Date.debug)
+      Namespace: \(namespaceURI, default: "nil")
+      Qualified name: \(qualifiedName, default: "nil")
+      Attributes: \(attributes.prettyPrinted())
+
+
+      """)
+  }
+
+  func logSkippedElement(_ elementDisplayName: String, namespaceURI: String?) {
+    print(
+      "Skipping element \(elementDisplayName) outside the admitted SVG namespace: "
+        + "\(String(describing: namespaceURI))"
+    )
+  }
+
+  func logProcessedAttribute(_ attributeName: String, value: String) {
+    print(
+      """
+      Processing attribute:
+      \"\(attributeName)\", value: \"\(value)\"
+
+      """
+    )
+  }
+
+  func logAddedToStack(_ element: SVGElement) {
+    print(
+      """
+      Adding to Stack:
+      \(element)
+      ----
+      """
+    )
+  }
 }
