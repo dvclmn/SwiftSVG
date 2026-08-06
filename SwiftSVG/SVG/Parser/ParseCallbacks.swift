@@ -29,6 +29,12 @@ extension NSXMLSVGParser {
     self.parseDiagnostics.removeAll()
     self.didSeeDocumentRootElement = false
     self.parserFailure = nil
+
+    if let initialisationFailure = self.initialisationFailure {
+      self.completeParsing(with: .failure(initialisationFailure))
+      return
+    }
+
     self.parse()
   }
 
@@ -75,7 +81,7 @@ extension NSXMLSVGParser {
 
   /// The `XMLParserDelegate` method called when the parser has started parsing
   /// an SVG element. This implementation dispatches supported attributes to their
-  /// curried functions and prints any attributes that SwiftSVG does not consume.
+  /// curried functions and reports any attributes that SwiftSVG does not consume.
   open func parser(
     _ parser: XMLParser,
     didStartElement elementName: String,
@@ -85,6 +91,7 @@ extension NSXMLSVGParser {
   ) {
     let namespaceURI = self.normalisedNamespaceURI(namespaceURI)
     let elementDisplayName = qName ?? elementName
+    let isDocumentRootElement = !self.didSeeDocumentRootElement
 
     self.logStartedElement(
       elementDisplayName,
@@ -100,11 +107,18 @@ extension NSXMLSVGParser {
     guard self.parserFailure == nil else { return }
 
     guard self.shouldProcessElement(namespaceURI: namespaceURI) else {
+      self.recordDiagnostic(
+        .elementOutsideDocumentNamespace(
+          name: elementName,
+          namespaceURI: namespaceURI,
+        )
+      )
       self.logSkippedElement(elementDisplayName, namespaceURI: namespaceURI)
       return
     }
 
     guard let makeElement = self.supportedElements?.tags[elementName] else {
+      self.recordDiagnostic(.unsupportedElement(name: elementName))
       print("\(elementName) is unsupported, skipping.")
       return
     }
@@ -118,6 +132,7 @@ extension NSXMLSVGParser {
         attributeDict,
         for: rootElement,
         namespaceURI: namespaceURI,
+        isDocumentRootElement: isDocumentRootElement,
       )
     }
 
@@ -248,6 +263,7 @@ extension NSXMLSVGParser {
     _ attributes: [String: String],
     for rootElement: SVGRootElement,
     namespaceURI: String?,
+    isDocumentRootElement: Bool,
   ) {
     let rootAttributes = SVGRootAttributes(
       attributes: attributes,
@@ -255,13 +271,13 @@ extension NSXMLSVGParser {
       xlinkNamespaceURI: self.currentNamespaceURI(matching: Self.xlinkNamespaceURI),
     )
 
-    if attributes["viewBox"] != nil, rootAttributes.viewBox == nil {
-      self.parseDiagnostics.append(.invalidViewBox)
+    if isDocumentRootElement, attributes["viewBox"] != nil, rootAttributes.viewBox == nil {
+      self.recordDiagnostic(.invalidViewBox)
     }
 
     rootElement.apply(rootAttributes)
 
-    guard self.elementStack.isEmpty else { return }
+    guard isDocumentRootElement else { return }
     self.containerLayer.rootAttributes = rootAttributes
   }
 
@@ -301,11 +317,27 @@ extension NSXMLSVGParser {
 
     for (attributeName, attributeValue) in attributes.sorted(by: { $0.key < $1.key })
     where !consumedAttributeNames.contains(attributeName) {
+      self.recordDiagnostic(
+        .unsupportedAttribute(
+          elementName: elementDisplayName,
+          name: attributeName,
+          value: attributeValue,
+        )
+      )
       print(
         "Skipping attribute on <\(elementDisplayName)>: \"\(attributeName)\" = \"\(attributeValue)\" "
           + "(unsupported by SwiftSVG; not applied)."
       )
     }
+  }
+}
+
+extension NSXMLSVGParser {
+  /// Records a condition once per parse until diagnostics carry source locations that can
+  /// distinguish otherwise-identical occurrences.
+  func recordDiagnostic(_ diagnostic: SVGParseDiagnostic) {
+    guard !self.parseDiagnostics.contains(diagnostic) else { return }
+    self.parseDiagnostics.append(diagnostic)
   }
 }
 

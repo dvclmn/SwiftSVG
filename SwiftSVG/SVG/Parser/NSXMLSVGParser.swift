@@ -41,6 +41,9 @@ open class NSXMLSVGParser: XMLParser, XMLParserDelegate {
   /// A problem discovered during delegate callbacks that should fail once XML parsing ends.
   var parserFailure: SVGParserError?
 
+  /// A failure loading URL-backed source before XML parsing can begin.
+  var initialisationFailure: Error?
+
   /// Namespace mappings currently in scope, stored as stacks so nested declarations can shadow
   /// and then restore an outer declaration with the same prefix.
   var namespaceURIStackByPrefix: [String: [String]] = [:]
@@ -104,7 +107,7 @@ extension NSXMLSVGParser {
   ///   elements and attribites have been parsed.
   public convenience init(
     svgURL: URL,
-    supportedElements: SVGParserSupportedElements? = nil,
+    supportedElements: SVGParserSupportedElements? = .allSupportedElements,
     completion: SVGCompletion? = nil,
   ) {
     do {
@@ -116,8 +119,19 @@ extension NSXMLSVGParser {
       )
     } catch {
       self.init()
-      print("Couldn't get data from URL. Error: \(error)")
+      self.completionBlock = completion
+      self.initialisationFailure = error
     }
+  }
+
+  /// Creates a URL-backed parser whose completion delivers both the assembled layer and its typed parse report.
+  public convenience init(
+    svgURL: URL,
+    supportedElements: SVGParserSupportedElements? = .allSupportedElements,
+    resultCompletion: SVGParseCompletion?,
+  ) {
+    self.init(svgURL: svgURL, supportedElements: supportedElements)
+    self.resultCompletionBlock = resultCompletion
   }
 }
 
@@ -127,7 +141,7 @@ extension NSXMLSVGParser {
   @available(*, deprecated, renamed: "init(svgURL:supportedElements:completion:)")
   public convenience init(
     SVGURL: URL,
-    supportedElements: SVGParserSupportedElements? = nil,
+    supportedElements: SVGParserSupportedElements? = .allSupportedElements,
     completion: SVGCompletion? = nil,
   ) {
     self.init(svgURL: SVGURL, supportedElements: supportedElements, completion: completion)

@@ -203,6 +203,8 @@ SwiftSVG accepts a namespace-less root `<svg>` only through this compatibility p
 
 When a root `viewBox` is present but malformed, non-finite, zero-sized, or negative-sized, SwiftSVG ignores that `viewBox` and records `.invalidViewBox` in the successful parse report. A host can then preserve a usable concrete root viewport while clearly explaining the authored SVG issue.
 
+SwiftSVG also reports admitted SVG elements and attributes that it does not currently apply. These diagnostics describe renderer capability rather than SVG specification validity: unsupported content may be valid SVG even though it was omitted from the produced layer hierarchy.
+
 Other Interfaces
 ================
 

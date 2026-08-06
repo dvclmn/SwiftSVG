@@ -21,7 +21,7 @@ extension NSXMLSVGParser {
         self.namespaceMode = .svg
       case nil:
         self.namespaceMode = .unnamespacedCompatibility
-        self.parseDiagnostics.append(.missingSVGNamespace)
+        self.recordDiagnostic(.missingSVGNamespace)
       case let namespaceURI?:
         self.parserFailure = .unsupportedRootNamespace(namespaceURI: namespaceURI)
     }

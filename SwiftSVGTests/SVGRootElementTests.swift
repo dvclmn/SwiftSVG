@@ -79,6 +79,44 @@ struct SVGRootElementTests {
   }
 
   @Test @MainActor
+  func nestedSVGDoesNotProduceARootViewBoxDiagnostic() async throws {
+    let source = """
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <svg viewBox="0 0 50 0"></svg>
+      </svg>
+      """
+    let parser = NSXMLSVGParser(svgData: Data(source.utf8))
+
+    let result = try await withCheckedThrowingContinuation { continuation in
+      parser.resultCompletionBlock = { result in
+        continuation.resume(with: result)
+      }
+      parser.startParsing()
+    }
+
+    #expect(result.report.diagnostics.isEmpty)
+  }
+
+  @Test @MainActor
+  func invalidRootAndNestedViewBoxesProduceOneRootDiagnostic() async throws {
+    let source = """
+      <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 0">
+        <svg viewBox="0 0 50 0"></svg>
+      </svg>
+      """
+    let parser = NSXMLSVGParser(svgData: Data(source.utf8))
+
+    let result = try await withCheckedThrowingContinuation { continuation in
+      parser.resultCompletionBlock = { result in
+        continuation.resume(with: result)
+      }
+      parser.startParsing()
+    }
+
+    #expect(result.report.diagnostics == [.invalidViewBox])
+  }
+
+  @Test @MainActor
   func parserPublishesAttributesOnCompletedLayer() async throws {
     let source = """
       <svg width="400" height="300" viewBox="10 20 100 200" xmlns="http://www.w3.org/2000/svg">
@@ -141,9 +179,114 @@ struct SVGRootElementTests {
     }
 
     #expect(result.report.namespaceMode == .unnamespacedCompatibility)
-    #expect(result.report.diagnostics == [.missingSVGNamespace])
+    #expect(result.report.diagnostics == [
+      .missingSVGNamespace,
+      .elementOutsideDocumentNamespace(name: "circle", namespaceURI: "urn:foreign"),
+    ])
     #expect(result.layer.rootAttributes?.namespace == nil)
     #expect(result.layer.sublayers?.count == 1)
+  }
+
+  @Test @MainActor
+  func parserReportsUnsupportedElementsAndAttributes() async throws {
+    let source = """
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <text>Title</text>
+        <rect width="20" height="20" data-purpose="sample" />
+      </svg>
+      """
+    let parser = NSXMLSVGParser(svgData: Data(source.utf8))
+
+    let result = try await withCheckedThrowingContinuation { continuation in
+      parser.resultCompletionBlock = { result in
+        continuation.resume(with: result)
+      }
+      parser.startParsing()
+    }
+
+    #expect(result.report.diagnostics == [
+      .unsupportedElement(name: "text"),
+      .unsupportedAttribute(
+        elementName: "rect",
+        name: "data-purpose",
+        value: "sample",
+      ),
+    ])
+  }
+
+  @Test @MainActor
+  func parserReportsIndistinguishableConditionsOncePerParse() async throws {
+    let source = """
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <text>First</text>
+        <text>Second</text>
+        <rect width="20" height="20" data-purpose="sample" />
+        <rect width="20" height="20" data-purpose="sample" />
+      </svg>
+      """
+    let parser = NSXMLSVGParser(svgData: Data(source.utf8))
+
+    let result = try await withCheckedThrowingContinuation { continuation in
+      parser.resultCompletionBlock = { result in
+        continuation.resume(with: result)
+      }
+      parser.startParsing()
+    }
+
+    #expect(result.report.diagnostics == [
+      .unsupportedElement(name: "text"),
+      .unsupportedAttribute(
+        elementName: "rect",
+        name: "data-purpose",
+        value: "sample",
+      ),
+    ])
+  }
+
+  @Test @MainActor
+  func URLLoadingFailureReachesTheCompletionHandler() async {
+    let url = FileManager.default.temporaryDirectory
+      .appendingPathComponent(UUID().uuidString)
+      .appendingPathExtension("svg")
+    let parser = NSXMLSVGParser(svgURL: url)
+
+    let error: Error? = await withCheckedContinuation { continuation in
+      parser.completionBlock = { result in
+        switch result {
+          case .success:
+            continuation.resume(returning: nil)
+          case .failure(let error):
+            continuation.resume(returning: error)
+        }
+      }
+      parser.startParsing()
+    }
+
+    #expect(error != nil)
+  }
+
+  @Test @MainActor
+  func URLLoadingFailureReachesTheResultCompletionHandler() async {
+    let url = FileManager.default.temporaryDirectory
+      .appendingPathComponent(UUID().uuidString)
+      .appendingPathExtension("svg")
+
+    let error: Error? = await withCheckedContinuation { continuation in
+      let parser = NSXMLSVGParser(
+        svgURL: url,
+        resultCompletion: { result in
+          switch result {
+            case .success:
+              continuation.resume(returning: nil)
+            case .failure(let error):
+              continuation.resume(returning: error)
+          }
+        },
+      )
+      parser.startParsing()
+    }
+
+    #expect(error != nil)
   }
 
   @Test @MainActor
